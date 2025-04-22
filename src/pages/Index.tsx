@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -254,7 +255,7 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Transaction Logs - Keep existing section */}
+            {/* Transaction Logs */}
             <Card className="neumorphic border-none">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-bold">Transaction Logs</CardTitle>
@@ -281,77 +282,77 @@ const Index = () => {
                   {/* Other tab contents would be similar */}
                 </Tabs>
               </CardContent>
+            </Card>
 
-              {/* Quick Actions Section */}
-              <Card className="neumorphic border-none">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-bold">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-3">
-                    {quickActions.map((action, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        className="w-full justify-start gap-3 h-auto p-3"
-                        onClick={() => navigate(action.action)}
-                      >
-                        <div className="p-2 rounded-full bg-primary/10">
-                          <action.icon className="h-4 w-4 text-primary" />
-                        </div>
-                        <div className="text-left">
-                          <h4 className="font-medium">{action.title}</h4>
-                          <p className="text-xs text-muted-foreground">{action.description}</p>
-                        </div>
-                      </Button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Recent Notifications */}
-              <Card className="neumorphic border-none">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-lg font-bold flex items-center gap-2">
-                    <Bell className="h-5 w-5 text-primary" />
-                    Notifications
-                  </CardTitle>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-muted-foreground text-xs"
-                  >
-                    View All
-                    <ArrowRight className="ml-1 h-3 w-3" />
-                  </Button>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentNotifications.map((notification, index) => (
-                      <div
-                        key={index}
-                        className="flex items-start gap-3 p-3 rounded-lg bg-background/50 hover:bg-primary/5 transition-colors"
-                      >
-                        <div className={cn(
-                          "w-2 h-2 rounded-full mt-2",
-                          {
-                            'bg-green-500': notification.type === 'success',
-                            'bg-blue-500': notification.type === 'info',
-                            'bg-yellow-500': notification.type === 'warning',
-                            'bg-red-500': notification.type === 'error'
-                          }
-                        )} />
-                        <div>
-                          <h4 className="font-medium text-sm">{notification.title}</h4>
-                          <p className="text-xs text-muted-foreground mt-1">{notification.description}</p>
-                          <span className="text-xs text-muted-foreground mt-2 block">{notification.timestamp}</span>
-                        </div>
+            {/* Quick Actions Section */}
+            <Card className="neumorphic border-none">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-bold">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3">
+                  {quickActions.map((action, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      className="w-full justify-start gap-3 h-auto p-3"
+                      onClick={() => navigate(action.action)}
+                    >
+                      <div className="p-2 rounded-full bg-primary/10">
+                        <action.icon className="h-4 w-4 text-primary" />
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                      <div className="text-left">
+                        <h4 className="font-medium">{action.title}</h4>
+                        <p className="text-xs text-muted-foreground">{action.description}</p>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Notifications */}
+            <Card className="neumorphic border-none">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-lg font-bold flex items-center gap-2">
+                  <Bell className="h-5 w-5 text-primary" />
+                  Notifications
+                </CardTitle>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground text-xs"
+                >
+                  View All
+                  <ArrowRight className="ml-1 h-3 w-3" />
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {recentNotifications.map((notification, index) => (
+                    <div
+                      key={index}
+                      className="flex items-start gap-3 p-3 rounded-lg bg-background/50 hover:bg-primary/5 transition-colors"
+                    >
+                      <div className={cn(
+                        "w-2 h-2 rounded-full mt-2",
+                        {
+                          'bg-green-500': notification.type === 'success',
+                          'bg-blue-500': notification.type === 'info',
+                          'bg-yellow-500': notification.type === 'warning',
+                          'bg-red-500': notification.type === 'error'
+                        }
+                      )} />
+                      <div>
+                        <h4 className="font-medium text-sm">{notification.title}</h4>
+                        <p className="text-xs text-muted-foreground mt-1">{notification.description}</p>
+                        <span className="text-xs text-muted-foreground mt-2 block">{notification.timestamp}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
