@@ -187,8 +187,11 @@ const Index = () => {
                 </CardContent>
               </Card>
             </div>
+          </div>
 
-            {/* Chain Activity Map */}
+          {/* Right Column */}
+          <div className="space-y-6">
+            {/* Chain Activity */}
             <Card className="neumorphic border-none">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-bold">Chain Activity</CardTitle>
@@ -215,12 +218,9 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Featured Content Section */}
+            {/* Featured Tips */}
             <FeaturedContent />
-          </div>
 
-          {/* Right Column */}
-          <div className="space-y-6">
             {/* Saved Commands */}
             <Card className="neumorphic border-none">
               <CardHeader className="pb-2">
