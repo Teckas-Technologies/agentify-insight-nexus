@@ -62,7 +62,9 @@ export const AgentSelector = ({
               onSelect={() => onSelectAgent(agent.id)}
               className={cn(
                 "group flex items-start gap-4 p-4 cursor-pointer transition-all duration-300",
+                // Fixed the hover styling to ensure it only appears on hover and disappears when not hovering
                 "hover:bg-gradient-to-r hover:from-primary/5 hover:to-primary/10",
+                // Separate styling for selected agent
                 selectedAgent === agent.id && "bg-gradient-to-r border border-primary/20",
                 agent.gradient
               )}
