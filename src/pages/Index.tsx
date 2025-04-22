@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,8 +8,8 @@ import { SavedCommand } from "@/components/dashboard/SavedCommand";
 import { AgentUsageChart } from "@/components/dashboard/AgentUsageChart";
 import { BarChartComponent } from "@/components/dashboard/BarChartComponent";
 import { ChainBadge } from "@/components/dashboard/ChainBadge";
+import { TipCard } from "@/components/dashboard/TipCard";
 import { TransactionLogs } from "@/components/dashboard/TransactionLogs";
-import { FeaturedContent } from "@/components/dashboard/FeaturedContent";
 import {
   Activity,
   ArrowRight,
@@ -187,11 +188,8 @@ const Index = () => {
                 </CardContent>
               </Card>
             </div>
-          </div>
 
-          {/* Right Column */}
-          <div className="space-y-6">
-            {/* Chain Activity */}
+            {/* Chain Activity Map */}
             <Card className="neumorphic border-none">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-bold">Chain Activity</CardTitle>
@@ -217,10 +215,10 @@ const Index = () => {
                 </div>
               </CardContent>
             </Card>
+          </div>
 
-            {/* Featured Tips */}
-            <FeaturedContent />
-
+          {/* Right Column */}
+          <div className="space-y-6">
             {/* Saved Commands */}
             <Card className="neumorphic border-none">
               <CardHeader className="pb-2">
@@ -274,6 +272,25 @@ const Index = () => {
                   </TabsContent>
                   {/* Other tab contents would be similar */}
                 </Tabs>
+              </CardContent>
+            </Card>
+
+            {/* Tips Section */}
+            <Card className="neumorphic border-none">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-bold">Tips & Features</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {tipsData.map((tip) => (
+                    <TipCard
+                      key={tip.id}
+                      title={tip.title}
+                      description={tip.description}
+                      icon={<Lightbulb className="h-5 w-5" />}
+                    />
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </div>
