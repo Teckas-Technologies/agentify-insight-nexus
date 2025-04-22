@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { Terminal, Search, Filter, ArrowRight } from "lucide-react";
+import React, { useState } from "react";
+import { Terminal, Search, Filter, ArrowRight, Construction } from "lucide-react";
 import AgentCard from "@/components/agents/AgentCard";
 import { AgentCategory, AgentData } from "@/types/agent";
 import SearchAndFilter from "@/components/agents/SearchAndFilter";
 import { Link } from "react-router-dom";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 // Sample agent data
 const agentsData: AgentData[] = [
@@ -122,6 +124,7 @@ const categories: AgentCategory[] = [
 const AgentsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [isComingSoonOpen, setIsComingSoonOpen] = useState(false);
 
   const filteredAgents = agentsData.filter(agent => {
     const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -216,10 +219,29 @@ const AgentsPage = () => {
                 Design, test, and deploy your AI agents in minutes.
               </p>
             </div>
-            <button className="glow neumorphic-sm hover:bg-primary/10 py-3 px-6 rounded-lg text-white font-medium border border-primary/20 flex items-center gap-2 transition-all">
-              Start Building
-              <ArrowRight className="h-4 w-4" />
-            </button>
+            <Dialog open={isComingSoonOpen} onOpenChange={setIsComingSoonOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  className="glow neumorphic-sm hover:bg-primary/10 py-3 px-6 rounded-lg text-white font-medium border border-primary/20 flex items-center gap-2 transition-all"
+                  onClick={() => setIsComingSoonOpen(true)}
+                >
+                  Start Building
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Construction className="h-6 w-6 text-primary" />
+                    Coming Soon
+                  </DialogTitle>
+                  <DialogDescription>
+                    We're working hard to bring the Agentify Developer Framework to life. 
+                    Stay tuned for an exciting update that will empower you to create custom AI agents!
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </main>
