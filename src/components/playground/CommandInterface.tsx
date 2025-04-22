@@ -1,11 +1,12 @@
 
-import { Send, Wallet, MessageCircle } from "lucide-react";
+import { Send, Wallet, MessageCircle, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
+import { agentExampleCommands } from "@/utils/agentCommands";
 
 interface CommandInterfaceProps {
   selectedAgent: string;
@@ -19,6 +20,10 @@ export const CommandInterface = ({
   onConnect = () => {}
 }: CommandInterfaceProps) => {
   const [inputValue, setInputValue] = useState("");
+
+  const handleQuickCommand = (command: string) => {
+    setInputValue(command);
+  };
 
   return (
     <Card className="neumorphic border-none h-full flex flex-col bg-gradient-to-b from-background/95 to-background">
@@ -49,7 +54,6 @@ export const CommandInterface = ({
         </div>
       </CardHeader>
       
-      {/* Fixed height content area with scrolling */}
       <CardContent className="flex-1 p-0 overflow-hidden relative">
         <ScrollArea className="h-[calc(100vh-280px)] w-full">
           <div className="p-6">
@@ -67,6 +71,24 @@ export const CommandInterface = ({
               </div>
             ) : (
               <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Zap className="h-4 w-4 text-primary" />
+                    <h3 className="text-sm font-medium">Quick Commands</h3>
+                  </div>
+                  <div className="grid gap-2">
+                    {agentExampleCommands[selectedAgent]?.map((command, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        className="w-full justify-start text-left h-auto py-3 px-4 bg-white/5 hover:bg-primary/10 border-white/10"
+                        onClick={() => handleQuickCommand(command)}
+                      >
+                        {command}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
                 {/* Message history will be added here */}
               </div>
             )}
@@ -74,7 +96,6 @@ export const CommandInterface = ({
         </ScrollArea>
       </CardContent>
 
-      {/* Fixed input area at the bottom */}
       <CardFooter className="border-t border-white/5 p-4 sticky bottom-0 bg-background z-10">
         <div className="flex w-full gap-3 items-center">
           <Badge 
