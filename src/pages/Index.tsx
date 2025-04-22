@@ -200,8 +200,8 @@ const Index = () => {
 
             {/* Quick Actions and Chain Activity Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Quick Actions Section */}
-              <Card className="neumorphic border-none">
+              {/* Quick Actions */}
+              <Card className="neumorphic border-none w-full">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg font-bold">Quick Actions</CardTitle>
                 </CardHeader>
@@ -228,7 +228,7 @@ const Index = () => {
               </Card>
 
               {/* Chain Activity */}
-              <Card className="neumorphic border-none">
+              <Card className="neumorphic border-none w-full">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg font-bold">Chain Activity</CardTitle>
                 </CardHeader>
