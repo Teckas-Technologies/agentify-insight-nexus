@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState } from "react";
 
 interface CommandInterfaceProps {
   selectedAgent: string;
@@ -17,6 +18,8 @@ export const CommandInterface = ({
   isWalletConnected = false,
   onConnect = () => {}
 }: CommandInterfaceProps) => {
+  const [inputValue, setInputValue] = useState("");
+
   return (
     <Card className="neumorphic border-none h-full flex flex-col bg-gradient-to-b from-background/95 to-background">
       <CardHeader className="border-b border-white/5 px-6">
@@ -46,8 +49,9 @@ export const CommandInterface = ({
         </div>
       </CardHeader>
       
-      <CardContent className="flex-1 p-0">
-        <ScrollArea className="h-[calc(100vh-280px)]">
+      {/* Fixed height content area with scrolling */}
+      <CardContent className="flex-1 p-0 overflow-hidden relative">
+        <ScrollArea className="h-[calc(100vh-280px)] w-full">
           <div className="p-6">
             {!isWalletConnected ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
@@ -70,7 +74,8 @@ export const CommandInterface = ({
         </ScrollArea>
       </CardContent>
 
-      <CardFooter className="border-t border-white/5 p-4">
+      {/* Fixed input area at the bottom */}
+      <CardFooter className="border-t border-white/5 p-4 sticky bottom-0 bg-background z-10">
         <div className="flex w-full gap-3 items-center">
           <Badge 
             variant="outline" 
@@ -83,11 +88,13 @@ export const CommandInterface = ({
               placeholder="Enter your command..." 
               className="flex-1 bg-white/5 border-white/10 focus:ring-primary/20"
               disabled={!isWalletConnected}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
             />
             <Button 
               size="icon" 
               className="shrink-0 neumorphic-sm bg-primary/10 hover:bg-primary/20 transition-colors"
-              disabled={!isWalletConnected}
+              disabled={!isWalletConnected || !inputValue.trim()}
             >
               <Send className="h-4 w-4" />
             </Button>
