@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,7 +85,7 @@ const Index = () => {
       <Navbar />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 space-y-6">
+      <main className="container mx-auto px-4 py-8 space-y-8">
         {/* Page Title */}
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Dashboard</h1>
@@ -129,9 +128,9 @@ const Index = () => {
           />
         </div>
 
-        {/* Main Dashboard Layout */}
+        {/* Main Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column (span 2) */}
+          {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Recent Activity Timeline */}
             <Card className="neumorphic border-none">
@@ -199,8 +198,8 @@ const Index = () => {
               </Card>
             </div>
 
-            {/* Quick Actions and Chain Activity Grid */}
-            <div className="grid grid-cols-1 gap-6">
+            {/* Quick Actions and Chain Activity Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Quick Actions Section */}
               <Card className="neumorphic border-none">
                 <CardHeader className="pb-2">
@@ -287,7 +286,7 @@ const Index = () => {
             </Card>
 
             {/* Transaction Logs */}
-            <Card className="neumorphic border-none h-full">
+            <Card className="neumorphic border-none">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-bold">Transaction Logs</CardTitle>
               </CardHeader>
@@ -310,6 +309,7 @@ const Index = () => {
                       </Button>
                     </div>
                   </TabsContent>
+                  {/* Other tab contents would be similar */}
                 </Tabs>
               </CardContent>
             </Card>
