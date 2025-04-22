@@ -35,8 +35,11 @@ import {
   gasHistoryData,
   tipsData,
 } from "@/data/mockData";
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -122,7 +125,12 @@ const Index = () => {
             <Card className="neumorphic border-none">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-lg font-bold">Recent Activity</CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground text-xs">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground text-xs"
+                  onClick={() => navigate('/activity')}
+                >
                   View All
                   <ArrowRight className="ml-1 h-3 w-3" />
                 </Button>
