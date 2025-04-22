@@ -4,10 +4,12 @@ import { Terminal, LayoutDashboard, Code, Layers, ArrowLeft } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { AgentSelector } from "@/components/playground/AgentSelector";
 import { CommandInterface } from "@/components/playground/CommandInterface";
+import { Link, useNavigate } from "react-router-dom";
 
 const Playground = () => {
   const [selectedAgent, setSelectedAgent] = useState("swap");
   const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
@@ -23,22 +25,22 @@ const Playground = () => {
             </h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
-            <a href="/" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-1.5">
+            <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-1.5">
               <LayoutDashboard className="h-4 w-4" />
               Dashboard
-            </a>
-            <a href="/playground" className="text-sm font-medium text-white flex items-center gap-1.5">
+            </Link>
+            <Link to="/playground" className="text-sm font-medium text-white flex items-center gap-1.5">
               <Terminal className="h-4 w-4" />
               Playground
-            </a>
-            <a href="#" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-1.5">
+            </Link>
+            <Link to="/agents" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-1.5">
               <Code className="h-4 w-4" />
               Agents
-            </a>
-            <a href="#" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-1.5">
+            </Link>
+            <Link to="/activity" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-1.5">
               <Layers className="h-4 w-4" />
               Assets
-            </a>
+            </Link>
           </nav>
           <Button 
             variant="outline" 
@@ -55,7 +57,7 @@ const Playground = () => {
             variant="outline" 
             size="sm" 
             className="neumorphic-sm flex items-center gap-2 mb-4 hover:bg-primary/5"
-            onClick={() => window.location.href = "/"}
+            onClick={() => navigate('/')}
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
