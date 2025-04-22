@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Terminal, Search, Filter, ArrowRight, Construction } from "lucide-react";
+import { Search, Filter, ArrowRight, Construction } from "lucide-react";
 import AgentCard from "@/components/agents/AgentCard";
 import { AgentCategory, AgentData } from "@/types/agent";
 import SearchAndFilter from "@/components/agents/SearchAndFilter";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import Navbar from "@/components/layout/Navbar";
 
 // Sample agent data
 const agentsData: AgentData[] = [
@@ -138,36 +139,7 @@ const AgentsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
-      {/* Header */}
-      <header className="px-6 py-4 border-b border-white/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-primary/10 ring-1 ring-primary/20">
-              <Terminal className="h-5 w-5 text-primary" />
-            </div>
-            <h1 className="text-xl font-bold bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent">
-              Agentify
-            </h1>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
-              Dashboard
-            </Link>
-            <Link to="/agents" className="text-sm font-medium text-white">
-              Agents
-            </Link>
-            <Link to="/playground" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
-              Playground
-            </Link>
-            <Link to="/activity" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
-              Activity
-            </Link>
-          </nav>
-          <button className="neumorphic-sm hover:bg-primary/5 py-2 px-4 rounded-lg text-sm font-medium border border-white/5 transition-all">
-            Connect Wallet
-          </button>
-        </div>
-      </header>
+      <Navbar />
       
       <main className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">

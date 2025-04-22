@@ -1,10 +1,11 @@
 
 import { useState } from "react";
-import { Terminal, LayoutDashboard, Code, Layers, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AgentSelector } from "@/components/playground/AgentSelector";
 import { CommandInterface } from "@/components/playground/CommandInterface";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Navbar from "@/components/layout/Navbar";
 
 const Playground = () => {
   const [selectedAgent, setSelectedAgent] = useState("swap");
@@ -13,43 +14,7 @@ const Playground = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
-      {/* Header */}
-      <header className="px-6 py-4 border-b border-white/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-primary/10 ring-1 ring-primary/20">
-              <Terminal className="h-5 w-5 text-primary" />
-            </div>
-            <h1 className="text-xl font-bold bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent">
-              Agentify
-            </h1>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-1.5">
-              <LayoutDashboard className="h-4 w-4" />
-              Dashboard
-            </Link>
-            <Link to="/playground" className="text-sm font-medium text-white flex items-center gap-1.5">
-              <Terminal className="h-4 w-4" />
-              Playground
-            </Link>
-            <Link to="/agents" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-1.5">
-              <Code className="h-4 w-4" />
-              Agents
-            </Link>
-            <Link to="/activity" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-1.5">
-              <Layers className="h-4 w-4" />
-              Assets
-            </Link>
-          </nav>
-          <Button 
-            variant="outline" 
-            className="neumorphic-sm hover:bg-primary/5"
-          >
-            Connect Wallet
-          </Button>
-        </div>
-      </header>
+      <Navbar />
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">

@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,23 +9,15 @@ import { BarChartComponent } from "@/components/dashboard/BarChartComponent";
 import { ChainBadge } from "@/components/dashboard/ChainBadge";
 import { TipCard } from "@/components/dashboard/TipCard";
 import { TransactionLogs } from "@/components/dashboard/TransactionLogs";
-import { Link } from "react-router-dom";
 import {
   Activity,
   ArrowRight,
   CircleDollarSign,
-  Code,
-  Command,
   Globe,
-  History,
-  Layers,
-  LayoutDashboard,
-  Lightbulb,
   PlayCircle,
   Repeat2,
   Terminal,
-  ToggleLeft,
-  TrendingUp,
+  Lightbulb,
 } from "lucide-react";
 import {
   executionSummaryData,
@@ -39,42 +30,14 @@ import {
   tipsData,
 } from "@/data/mockData";
 import { useNavigate } from 'react-router-dom';
+import Navbar from "@/components/layout/Navbar";
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="px-6 py-4 border-b border-white/5">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Terminal className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">Agentify</h1>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-sm font-medium text-white flex items-center gap-1.5">
-              <LayoutDashboard className="h-4 w-4" />
-              Dashboard
-            </Link>
-            <Link to="/playground" className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
-              <Command className="h-4 w-4" />
-              Playground
-            </Link>
-            <Link to="/agents" className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
-              <Code className="h-4 w-4" />
-              Agents
-            </Link>
-            <Link to="#" className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
-              <Layers className="h-4 w-4" />
-              Assets
-            </Link>
-          </nav>
-          <Button variant="outline" className="neumorphic-sm">
-            Connect Wallet
-          </Button>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">
