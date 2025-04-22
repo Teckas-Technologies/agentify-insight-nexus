@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,6 +9,7 @@ import { AgentUsageChart } from "@/components/dashboard/AgentUsageChart";
 import { BarChartComponent } from "@/components/dashboard/BarChartComponent";
 import { ChainBadge } from "@/components/dashboard/ChainBadge";
 import { TipCard } from "@/components/dashboard/TipCard";
+import { TransactionLogs } from "@/components/dashboard/TransactionLogs";
 import {
   Activity,
   ArrowRight,
@@ -258,13 +260,14 @@ const Index = () => {
                     <TabsTrigger value="lend" className="text-xs">Lending</TabsTrigger>
                   </TabsList>
                   <TabsContent value="all" className="m-0">
-                    <div className="text-center py-4">
-                      <History className="h-10 w-10 text-primary/50 mx-auto mb-2" />
-                      <h3 className="text-base font-medium">Transaction History</h3>
-                      <p className="text-sm text-muted-foreground mt-1 mb-4">
-                        View detailed logs of all your transactions
-                      </p>
-                      <Button className="glow">View All Transactions</Button>
+                    <div className="space-y-4">
+                      <TransactionLogs limit={3} />
+                      <Button 
+                        className="glow w-full" 
+                        onClick={() => navigate('/transactions')}
+                      >
+                        View All Transactions
+                      </Button>
                     </div>
                   </TabsContent>
                   {/* Other tab contents would be similar */}

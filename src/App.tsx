@@ -9,6 +9,7 @@ import Playground from "./pages/Playground";
 import NotFound from "./pages/NotFound";
 import ActivityPage from "./pages/Activity";
 import CommandsPage from "./pages/Commands";
+import TransactionsPage from "./pages/Transactions";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/playground" element={<Playground />} />
           <Route path="/activity" element={<ActivityPage />} />
           <Route path="/commands" element={<CommandsPage />} />
+          <Route path="/transactions" element={<TransactionsPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
