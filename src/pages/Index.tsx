@@ -232,7 +232,12 @@ const Index = () => {
                       icon={<PlayCircle className="h-4 w-4" />}
                     />
                   ))}
-                  <Button variant="outline" className="w-full mt-2" size="sm">
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-2" 
+                    size="sm"
+                    onClick={() => navigate('/commands')}
+                  >
                     View All Commands
                   </Button>
                 </div>
