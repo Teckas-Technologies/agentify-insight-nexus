@@ -1,6 +1,5 @@
-
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
-import { Swap, Bridge, Layers } from "lucide-react";
+import { ArrowLeftRight, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -16,13 +15,13 @@ const agents: Agent[] = [
     id: "swap",
     name: "Swap Assistant",
     description: "Execute token swaps across any DEX",
-    icon: Swap
+    icon: ArrowLeftRight
   },
   {
     id: "bridge",
     name: "Bridge Assistant",
     description: "Bridge tokens between networks",
-    icon: Bridge
+    icon: Layers
   },
   {
     id: "lend",
@@ -75,3 +74,5 @@ export const AgentSelector = ({
     </Command>
   );
 };
+
+export default AgentSelector;
