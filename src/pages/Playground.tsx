@@ -1,11 +1,30 @@
 
 import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Zap, Layers, Code, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AgentSelector } from "@/components/playground/AgentSelector";
 import { CommandInterface } from "@/components/playground/CommandInterface";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const PlaygroundFeatures = [
+  {
+    icon: Zap,
+    title: "AI-Powered Transactions",
+    description: "Execute complex blockchain transactions using natural language commands."
+  },
+  {
+    icon: Layers,
+    title: "Multi-Chain Support",
+    description: "Seamlessly interact with multiple blockchain networks in one interface."
+  },
+  {
+    icon: Code,
+    title: "Smart Agent Assistance",
+    description: "Choose from specialized agents tailored to different transaction types."
+  }
+];
 
 const Playground = () => {
   const [selectedAgent, setSelectedAgent] = useState("swap");
@@ -43,6 +62,28 @@ const Playground = () => {
                 onSelectAgent={setSelectedAgent}
               />
             </div>
+
+            <Card className="neumorphic border-none">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5 text-primary" />
+                  Playground Features
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {PlaygroundFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-center gap-4 p-3 rounded-xl bg-background/50 hover:bg-primary/5 transition-colors">
+                    <div className="p-2 rounded-full bg-primary/10 text-primary">
+                      <feature.icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">{feature.title}</h3>
+                      <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           </div>
           
           <div className="lg:col-span-8">
