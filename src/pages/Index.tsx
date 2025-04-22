@@ -10,6 +10,7 @@ import { BarChartComponent } from "@/components/dashboard/BarChartComponent";
 import { ChainBadge } from "@/components/dashboard/ChainBadge";
 import { TipCard } from "@/components/dashboard/TipCard";
 import { TransactionLogs } from "@/components/dashboard/TransactionLogs";
+import { FeaturedContent } from "@/components/dashboard/FeaturedContent";
 import {
   Activity,
   ArrowRight,
@@ -215,6 +216,9 @@ const Index = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Featured Content Section */}
+            <FeaturedContent />
           </div>
 
           {/* Right Column */}
