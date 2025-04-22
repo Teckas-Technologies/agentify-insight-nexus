@@ -3,6 +3,7 @@ import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, Command
 import { ArrowLeftRight, Layers, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Agent = {
   id: string;
@@ -44,6 +45,17 @@ export const AgentSelector = ({
   onSelectAgent: (id: string) => void;
 }) => {
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+
+  const handleSelectAgent = (agentId: string) => {
+    // Update the selected agent in the current component
+    onSelectAgent(agentId);
+
+    // Optional: Update the URL query parameter without navigation
+    const url = new URL(window.location.href);
+    url.searchParams.set('agent', agentId);
+    window.history.pushState({}, '', url);
+  };
 
   return (
     <Command className="rounded-xl border-0 bg-background/50 backdrop-blur-xl">
@@ -59,12 +71,10 @@ export const AgentSelector = ({
           {agents.map((agent) => (
             <CommandItem
               key={agent.id}
-              onSelect={() => onSelectAgent(agent.id)}
+              onSelect={() => handleSelectAgent(agent.id)}
               className={cn(
                 "group flex items-start gap-4 p-4 cursor-pointer transition-all duration-300",
-                // Fixed the hover styling to ensure it only appears on hover and disappears when not hovering
                 "hover:bg-gradient-to-r hover:from-primary/5 hover:to-primary/10",
-                // Separate styling for selected agent
                 selectedAgent === agent.id && "bg-gradient-to-r border border-primary/20",
                 agent.gradient
               )}
