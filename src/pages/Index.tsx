@@ -10,6 +10,7 @@ import { BarChartComponent } from "@/components/dashboard/BarChartComponent";
 import { ChainBadge } from "@/components/dashboard/ChainBadge";
 import { TipCard } from "@/components/dashboard/TipCard";
 import { TransactionLogs } from "@/components/dashboard/TransactionLogs";
+import { Link } from "react-router-dom";
 import {
   Activity,
   ArrowRight,
@@ -52,22 +53,22 @@ const Index = () => {
             <h1 className="text-xl font-bold">Agentify</h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
-            <a href="/" className="text-sm font-medium text-white flex items-center gap-1.5">
+            <Link to="/" className="text-sm font-medium text-white flex items-center gap-1.5">
               <LayoutDashboard className="h-4 w-4" />
               Dashboard
-            </a>
-            <a href="/playground" className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
+            </Link>
+            <Link to="/playground" className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
               <Command className="h-4 w-4" />
               Playground
-            </a>
-            <a href="#" className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
+            </Link>
+            <Link to="/agents" className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
               <Code className="h-4 w-4" />
               Agents
-            </a>
-            <a href="#" className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
+            </Link>
+            <Link to="#" className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
               <Layers className="h-4 w-4" />
               Assets
-            </a>
+            </Link>
           </nav>
           <Button variant="outline" className="neumorphic-sm">
             Connect Wallet
@@ -84,7 +85,7 @@ const Index = () => {
             variant="outline" 
             size="sm" 
             className="neumorphic-sm flex items-center gap-2"
-            onClick={() => window.location.href = "/playground"}
+            onClick={() => navigate('/playground')}
           >
             <Terminal className="h-4 w-4" />
             Go to Playground

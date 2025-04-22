@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { Terminal, Search, Filter, ArrowRight } from "lucide-react";
 import AgentCard from "@/components/agents/AgentCard";
 import { AgentCategory, AgentData } from "@/types/agent";
 import SearchAndFilter from "@/components/agents/SearchAndFilter";
+import { Link } from "react-router-dom";
 
 // Sample agent data
 const agentsData: AgentData[] = [
@@ -147,18 +147,18 @@ const AgentsPage = () => {
             </h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
-            <a href="/" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
+            <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
               Dashboard
-            </a>
-            <a href="/agents" className="text-sm font-medium text-white">
+            </Link>
+            <Link to="/agents" className="text-sm font-medium text-white">
               Agents
-            </a>
-            <a href="/playground" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
+            </Link>
+            <Link to="/playground" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
               Playground
-            </a>
-            <a href="/activity" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
+            </Link>
+            <Link to="/activity" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
               Activity
-            </a>
+            </Link>
           </nav>
           <button className="neumorphic-sm hover:bg-primary/5 py-2 px-4 rounded-lg text-sm font-medium border border-white/5 transition-all">
             Connect Wallet
