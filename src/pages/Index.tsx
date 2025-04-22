@@ -18,6 +18,7 @@ import {
   Repeat2,
   Terminal,
   Lightbulb,
+  Bell,
 } from "lucide-react";
 import {
   executionSummaryData,
@@ -31,6 +32,49 @@ import {
 } from "@/data/mockData";
 import { useNavigate } from 'react-router-dom';
 import Navbar from "@/components/layout/Navbar";
+import { cn } from "@/lib/utils";
+
+const recentNotifications = [
+  {
+    title: "New Agent Available",
+    description: "Bridge Agent is now available for cross-chain transactions",
+    timestamp: "2 hours ago",
+    type: "info"
+  },
+  {
+    title: "Gas Price Alert",
+    description: "ETH gas prices are currently below average",
+    timestamp: "4 hours ago",
+    type: "success"
+  },
+  {
+    title: "Scheduled Maintenance",
+    description: "Platform maintenance scheduled for tomorrow",
+    timestamp: "1 day ago",
+    type: "warning"
+  }
+];
+
+const quickActions = [
+  {
+    title: "Quick Swap",
+    description: "Swap tokens with minimal clicks",
+    icon: Repeat2,
+    action: "/playground"
+  },
+  {
+    title: "Command History",
+    description: "View your recent commands",
+    icon: Terminal,
+    action: "/commands"
+  },
+  {
+    title: "Run Last Command",
+    description: "Execute your most recent transaction",
+    icon: PlayCircle,
+    action: "/playground"
+  }
+];
 
 const Index = () => {
   const navigate = useNavigate();
@@ -181,9 +225,9 @@ const Index = () => {
             </Card>
           </div>
 
-          {/* Right Column */}
+          {/* Right Column - Updated with new sections */}
           <div className="space-y-6">
-            {/* Saved Commands */}
+            {/* Saved Commands - Keep existing section */}
             <Card className="neumorphic border-none">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-bold">Saved Commands</CardTitle>
@@ -210,7 +254,7 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Transaction Logs */}
+            {/* Transaction Logs - Keep existing section */}
             <Card className="neumorphic border-none">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-bold">Transaction Logs</CardTitle>
@@ -237,26 +281,77 @@ const Index = () => {
                   {/* Other tab contents would be similar */}
                 </Tabs>
               </CardContent>
-            </Card>
 
-            {/* Tips Section */}
-            <Card className="neumorphic border-none">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-bold">Tips & Features</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {tipsData.map((tip) => (
-                    <TipCard
-                      key={tip.id}
-                      title={tip.title}
-                      description={tip.description}
-                      icon={<Lightbulb className="h-5 w-5" />}
-                    />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+              {/* Quick Actions Section */}
+              <Card className="neumorphic border-none">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-bold">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-3">
+                    {quickActions.map((action, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        className="w-full justify-start gap-3 h-auto p-3"
+                        onClick={() => navigate(action.action)}
+                      >
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <action.icon className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="text-left">
+                          <h4 className="font-medium">{action.title}</h4>
+                          <p className="text-xs text-muted-foreground">{action.description}</p>
+                        </div>
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Recent Notifications */}
+              <Card className="neumorphic border-none">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-lg font-bold flex items-center gap-2">
+                    <Bell className="h-5 w-5 text-primary" />
+                    Notifications
+                  </CardTitle>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-muted-foreground text-xs"
+                  >
+                    View All
+                    <ArrowRight className="ml-1 h-3 w-3" />
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {recentNotifications.map((notification, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-3 p-3 rounded-lg bg-background/50 hover:bg-primary/5 transition-colors"
+                      >
+                        <div className={cn(
+                          "w-2 h-2 rounded-full mt-2",
+                          {
+                            'bg-green-500': notification.type === 'success',
+                            'bg-blue-500': notification.type === 'info',
+                            'bg-yellow-500': notification.type === 'warning',
+                            'bg-red-500': notification.type === 'error'
+                          }
+                        )} />
+                        <div>
+                          <h4 className="font-medium text-sm">{notification.title}</h4>
+                          <p className="text-xs text-muted-foreground mt-1">{notification.description}</p>
+                          <span className="text-xs text-muted-foreground mt-2 block">{notification.timestamp}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </main>
