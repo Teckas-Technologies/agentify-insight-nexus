@@ -1,10 +1,13 @@
-
 import { useState } from "react";
 import { Terminal, LayoutDashboard, Code, Layers, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { AgentSelector } from "@/components/playground/AgentSelector";
+import { CommandInterface } from "@/components/playground/CommandInterface";
 
 const Playground = () => {
+  const [selectedAgent, setSelectedAgent] = useState("swap");
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -37,7 +40,7 @@ const Playground = () => {
           </Button>
         </div>
       </header>
-
+      
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <Button 
@@ -55,21 +58,24 @@ const Playground = () => {
           </p>
         </div>
 
-        <Card className="neumorphic border-none mx-auto max-w-3xl">
-          <CardHeader>
-            <CardTitle>Command Interface</CardTitle>
-          </CardHeader>
-          <CardContent className="flex items-center justify-center p-16">
-            <div className="text-center">
-              <Terminal className="h-16 w-16 text-primary/70 mx-auto mb-4" />
-              <h2 className="text-xl font-medium mb-2">Command Interface</h2>
-              <p className="text-muted-foreground mb-4 max-w-md">
-                This is where you would interact with the AI agents through natural language commands.
-                The input interface would be designed here.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Panel */}
+          <div className="lg:col-span-4">
+            <AgentSelector 
+              selectedAgent={selectedAgent}
+              onSelectAgent={setSelectedAgent}
+            />
+          </div>
+          
+          {/* Right Panel */}
+          <div className="lg:col-span-8">
+            <CommandInterface 
+              selectedAgent={selectedAgent}
+              isWalletConnected={isWalletConnected}
+              onConnect={() => setIsWalletConnected(true)}
+            />
+          </div>
+        </div>
       </main>
     </div>
   );
