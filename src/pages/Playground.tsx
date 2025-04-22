@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Terminal, LayoutDashboard, Code, Layers, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ const Playground = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="px-6 py-4 border-b border-white/5">
+      <header className="px-6 py-4 border-b border-white/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Terminal className="h-6 w-6 text-primary" />
@@ -52,22 +53,22 @@ const Playground = () => {
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Button>
-          <h1 className="text-2xl font-bold">AI Playground</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">AI Playground</h1>
           <p className="text-muted-foreground mt-1">
-            Interact with Agentify's AI agents through natural language commands
+            Execute smart transactions with natural language
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Panel */}
-          <div className="lg:col-span-4">
-            <AgentSelector 
-              selectedAgent={selectedAgent}
-              onSelectAgent={setSelectedAgent}
-            />
+          <div className="lg:col-span-4 space-y-4">
+            <div className="p-4 rounded-lg neumorphic border-none">
+              <AgentSelector 
+                selectedAgent={selectedAgent}
+                onSelectAgent={setSelectedAgent}
+              />
+            </div>
           </div>
           
-          {/* Right Panel */}
           <div className="lg:col-span-8">
             <CommandInterface 
               selectedAgent={selectedAgent}
