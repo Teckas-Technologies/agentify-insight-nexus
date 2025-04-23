@@ -1,5 +1,4 @@
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
   Table, 
@@ -27,6 +26,7 @@ import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 const getTransactionIcon = (type: string) => {
   switch (type) {
@@ -91,56 +91,60 @@ const ActivityPage = () => {
             </div>
           </div>
 
-          {/* Transactions Table */}
+          {/* Transactions Table or Empty State */}
           <Card className="neumorphic border-none">
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Chain</TableHead>
-                    <TableHead>Time</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Gas</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="w-[100px]">TX Hash</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredTransactions.map((tx) => (
-                    <TableRow key={tx.id}>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <span className="bg-primary/10 p-1 rounded-full mr-2 text-primary">
-                            {getTransactionIcon(tx.type)}
-                          </span>
-                          <span className="capitalize">{tx.type}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{tx.description}</TableCell>
-                      <TableCell>{tx.chain}</TableCell>
-                      <TableCell>{format(new Date(tx.time), "MMM d, h:mm a")}</TableCell>
-                      <TableCell>{tx.amount}</TableCell>
-                      <TableCell>{tx.gas}</TableCell>
-                      <TableCell>
-                        <StatusBadge status={tx.status} />
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 px-2 text-xs"
-                          onClick={() => window.open(`https://etherscan.io/tx/${tx.hash}`, "_blank")}
-                        >
-                          {tx.hash.slice(0, 6)}...
-                          <ExternalLink className="ml-1 h-3 w-3" />
-                        </Button>
-                      </TableCell>
+              {filteredTransactions.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Chain</TableHead>
+                      <TableHead>Time</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Gas</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="w-[100px]">TX Hash</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredTransactions.map((tx) => (
+                      <TableRow key={tx.id}>
+                        <TableCell>
+                          <div className="flex items-center">
+                            <span className="bg-primary/10 p-1 rounded-full mr-2 text-primary">
+                              {getTransactionIcon(tx.type)}
+                            </span>
+                            <span className="capitalize">{tx.type}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{tx.description}</TableCell>
+                        <TableCell>{tx.chain}</TableCell>
+                        <TableCell>{format(new Date(tx.time), "MMM d, h:mm a")}</TableCell>
+                        <TableCell>{tx.amount}</TableCell>
+                        <TableCell>{tx.gas}</TableCell>
+                        <TableCell>
+                          <StatusBadge status={tx.status} />
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                            onClick={() => window.open(`https://etherscan.io/tx/${tx.hash}`, "_blank")}
+                          >
+                            {tx.hash.slice(0, 6)}...
+                            <ExternalLink className="ml-1 h-3 w-3" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <EmptyState />
+              )}
             </CardContent>
           </Card>
         </div>
