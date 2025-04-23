@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   ArrowLeftRight, 
@@ -10,7 +9,7 @@ import {
   ArrowRightLeft,
   Clock
 } from "lucide-react";
-import { transactionLogsData } from "@/data/mockData";
+import { transactionLogsData } from "@/data/activity";
 import { StatusBadge } from "./StatusBadge";
 import { format } from "date-fns";
 

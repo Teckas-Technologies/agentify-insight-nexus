@@ -23,14 +23,17 @@ import {
 } from "lucide-react";
 import {
   executionSummaryData,
-  recentActivityData,
   savedCommandsData,
+} from "@/data/commands";
+import {
   agentUsageData,
   chainActivityData,
+} from "@/data/agents";
+import {
   gasUsageData,
   gasHistoryData,
-  tipsData,
-} from "@/data/mockData";
+} from "@/data/gas";
+import { recentActivityData } from "@/data/activity";
 import { useNavigate } from 'react-router-dom';
 import Navbar from "@/components/layout/Navbar";
 import { cn } from "@/lib/utils";
