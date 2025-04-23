@@ -51,7 +51,7 @@ const getTransactionIcon = (type: string) => {
 
 const ActivityPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [transactions] = useState<any[]>([]);
   
   const filteredTransactions = transactions.filter(tx => 
@@ -100,6 +100,7 @@ const ActivityPage = () => {
               {isLoading ? (
                 <LoadingSkeleton rows={5} />
               ) : filteredTransactions.length > 0 ? (
+                
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -148,7 +149,10 @@ const ActivityPage = () => {
                   </TableBody>
                 </Table>
               ) : (
-                <EmptyState />
+                <EmptyState 
+                  title="No transactions yet" 
+                  description="Start exploring and performing transactions to see your activity here." 
+                />
               )}
             </CardContent>
           </Card>
