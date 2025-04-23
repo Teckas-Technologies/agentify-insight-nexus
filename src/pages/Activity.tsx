@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -20,13 +21,13 @@ import {
   Filter,
   ExternalLink
 } from "lucide-react";
-import { transactionLogsData } from "@/data/mockData";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 
 const getTransactionIcon = (type: string) => {
   switch (type) {
@@ -51,11 +52,13 @@ const getTransactionIcon = (type: string) => {
 
 const ActivityPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading] = useState(true);
+  const [transactions] = useState<any[]>([]);
   
-  const filteredTransactions = transactionLogsData.filter(tx => 
-    tx.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tx.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tx.chain.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTransactions = transactions.filter(tx => 
+    tx.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    tx.type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    tx.chain?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -80,21 +83,24 @@ const ActivityPage = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
+                  disabled={isLoading}
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" disabled={isLoading}>
                 <Filter className="h-4 w-4" />
               </Button>
             </div>
           </div>
 
-          {/* Transactions Table or Empty State */}
+          {/* Transactions Table or Loading State or Empty State */}
           <Card className="neumorphic border-none">
             <CardContent>
-              {filteredTransactions.length > 0 ? (
+              {isLoading ? (
+                <LoadingSkeleton rows={5} />
+              ) : filteredTransactions.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
