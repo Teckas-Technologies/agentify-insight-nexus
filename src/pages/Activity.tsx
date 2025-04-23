@@ -151,9 +151,7 @@ const ActivityPage = () => {
               ) : (
                 <EmptyState 
                   title="No transactions yet" 
-                  description="Start exploring and performing transactions to see your activity here."
-                  ctaText="Go to Transactions"
-                  ctaLink="/transactions"
+                  description="Start exploring and performing transactions to see your activity here." 
                 />
               )}
             </CardContent>
