@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SavedCommand } from "@/components/dashboard/SavedCommand";
 import { PlayCircle } from "lucide-react";
-import { savedCommandsData } from "@/data/mockData";
+import { savedCommandsData } from "@/data/commands";
 import { Button } from "@/components/ui/button";
 import {
   Pagination,

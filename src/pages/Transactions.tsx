@@ -28,7 +28,7 @@ import {
   Filter
 } from "lucide-react";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
-import { transactionLogsData } from "@/data/mockData";
+import { transactionLogsData } from "@/data/activity";
 import { format } from "date-fns";
 import { 
   Pagination, 
