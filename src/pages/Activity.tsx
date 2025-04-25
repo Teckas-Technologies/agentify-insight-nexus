@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -21,13 +20,6 @@ import {
   Filter,
   ExternalLink
 } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
@@ -36,6 +28,12 @@ import Navbar from "@/components/layout/Navbar";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import { mockTransactions, filterOptions } from "@/data/activity";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const getTransactionIcon = (type: string) => {
   switch (type) {
@@ -102,18 +100,29 @@ const ActivityPage = () => {
                   <Clock className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {filterOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2 bg-background/50 border-white/10">
+                    <Filter className="h-4 w-4" />
+                    <span className="hidden sm:inline-block">
+                      {filterOptions.find(f => f.value === filterType)?.label || "All Activities"}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-xl border-white/10">
+                  {filterOptions.map((option) => (
+                    <DropdownMenuItem
+                      key={option.value}
+                      onClick={() => setFilterType(option.value)}
+                      className={`cursor-pointer ${
+                        filterType === option.value ? "bg-primary/10 text-white" : ""
+                      }`}
+                    >
                       {option.label}
-                    </SelectItem>
+                    </DropdownMenuItem>
                   ))}
-                </SelectContent>
-              </Select>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
