@@ -1,11 +1,18 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Terminal, LayoutDashboard, Command, Code, Layers } from "lucide-react";
+import { Terminal, LayoutDashboard, Command, Code, Layers, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NavLink from "./NavLink";
 
 const Navbar: React.FC = () => {
+  // For demo purposes - in a real app this would be managed through a context or state management
+  const [isConnected, setIsConnected] = useState(false);
+  
+  const handleConnectWallet = () => {
+    setIsConnected(true);
+  };
+
   return (
     <header className="px-6 py-4 border-b border-white/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
@@ -34,8 +41,19 @@ const Navbar: React.FC = () => {
         <Button 
           variant="outline" 
           className="neumorphic-sm hover:bg-primary/5"
+          onClick={handleConnectWallet}
         >
-          Connect Wallet
+          {isConnected ? (
+            <span className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-green-500"></span>
+              Connected
+            </span>
+          ) : (
+            <>
+              <Wallet className="mr-2 h-4 w-4" />
+              Connect Wallet
+            </>
+          )}
         </Button>
       </div>
     </header>
