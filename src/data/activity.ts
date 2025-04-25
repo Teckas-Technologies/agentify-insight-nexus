@@ -69,6 +69,33 @@ export const mockTransactions: Transaction[] = [
   }
 ];
 
+// Adding the missing exports that are referenced in other files
+export const transactionLogsData = [...mockTransactions];
+
+export const recentActivityData = [
+  {
+    id: "ra-1",
+    title: "Swapped ETH for USDC",
+    description: "On Arbitrum",
+    timestamp: "30 minutes ago",
+    status: "success" as const
+  },
+  {
+    id: "ra-2",
+    title: "Bridged USDC to Optimism",
+    description: "From Ethereum",
+    timestamp: "45 minutes ago",
+    status: "pending" as const
+  },
+  {
+    id: "ra-3",
+    title: "Supplied ETH to Aave",
+    description: "On Ethereum",
+    timestamp: "1 hour ago",
+    status: "success" as const
+  }
+];
+
 export const filterOptions = [
   { value: "all", label: "All Activities" },
   { value: "swap", label: "Swaps" },
