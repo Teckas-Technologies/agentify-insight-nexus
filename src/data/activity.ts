@@ -1,104 +1,81 @@
 
-export const recentActivityData = [
-  {
-    id: 1,
-    title: "Swapped ETH to USDC",
-    description: "0.5 ETH to 942.32 USDC on Arbitrum",
-    timestamp: "2 minutes ago",
-    status: "success" as const,
-  },
-  {
-    id: 2,
-    title: "Bridged USDT to Optimism",
-    description: "500 USDT from Ethereum to Optimism",
-    timestamp: "35 minutes ago",
-    status: "success" as const,
-  },
-  {
-    id: 3,
-    title: "Supplied USDC to Aave",
-    description: "1000 USDC supplied on Arbitrum",
-    timestamp: "1 hour ago",
-    status: "pending" as const,
-  },
-  {
-    id: 4,
-    title: "Swapped USDC to wBTC",
-    description: "2000 USDC to 0.037 wBTC on Polygon",
-    timestamp: "3 hours ago",
-    status: "success" as const,
-  },
-  {
-    id: 5,
-    title: "Claimed rewards from staking",
-    description: "23.5 OP tokens claimed on Optimism",
-    timestamp: "5 hours ago",
-    status: "failed" as const,
-  },
-  {
-    id: 6,
-    title: "Borrowed DAI against ETH",
-    description: "500 DAI borrowed on Ethereum",
-    timestamp: "1 day ago",
-    status: "success" as const,
-  },
-];
+export interface Transaction {
+  id: string;
+  type: 'swap' | 'bridge' | 'lend' | 'reward' | 'borrow' | 'withdraw' | 'stake';
+  description: string;
+  chain: string;
+  time: string;
+  amount: string;
+  gas: string;
+  status: 'success' | 'pending' | 'failed';
+  hash: string;
+}
 
-export const transactionLogsData = [
+export const mockTransactions: Transaction[] = [
   {
     id: "tx-1",
     type: "swap",
-    description: "Swapped 0.5 ETH to 942.32 USDC",
+    description: "Swapped ETH for USDC",
     chain: "Arbitrum",
-    time: "2025-04-22T08:30:00",
-    amount: "0.5 ETH",
-    status: "success" as const,
-    hash: "0x3a8d...b4e2",
-    gas: "0.0015 ETH",
+    time: "2025-04-25T10:30:00",
+    amount: "1.5 ETH",
+    gas: "0.002 ETH",
+    status: "success",
+    hash: "0x1234...5678"
   },
   {
     id: "tx-2",
     type: "bridge",
-    description: "Bridged 500 USDT from Ethereum to Optimism",
+    description: "Bridged USDC to Optimism",
     chain: "Ethereum → Optimism",
-    time: "2025-04-21T14:15:00",
-    amount: "500 USDT",
-    status: "success" as const,
-    hash: "0x7c2e...9f01",
-    gas: "0.0032 ETH",
+    time: "2025-04-25T09:45:00",
+    amount: "5000 USDC",
+    gas: "0.004 ETH",
+    status: "pending",
+    hash: "0x8765...4321"
   },
   {
     id: "tx-3",
     type: "lend",
-    description: "Supplied 1000 USDC to Aave",
-    chain: "Arbitrum",
-    time: "2025-04-21T09:45:00",
-    amount: "1000 USDC",
-    status: "pending" as const,
-    hash: "0x5d1a...2c18",
-    gas: "0.0009 ETH",
+    description: "Supplied ETH to Aave",
+    chain: "Ethereum",
+    time: "2025-04-25T08:15:00",
+    amount: "2.0 ETH",
+    gas: "0.003 ETH",
+    status: "success",
+    hash: "0xabcd...efgh"
   },
   {
     id: "tx-4",
-    type: "swap",
-    description: "Swapped 2000 USDC to 0.037 wBTC",
-    chain: "Polygon",
-    time: "2025-04-20T17:20:00",
-    amount: "2000 USDC",
-    status: "success" as const,
-    hash: "0x91f4...8a76",
-    gas: "0.0004 MATIC",
+    type: "stake",
+    description: "Staked ETH in Lido",
+    chain: "Ethereum",
+    time: "2025-04-24T23:20:00",
+    amount: "5.0 ETH",
+    gas: "0.002 ETH",
+    status: "success",
+    hash: "0x9876...5432"
   },
   {
     id: "tx-5",
     type: "reward",
-    description: "Claimed 23.5 OP tokens from staking",
+    description: "Claimed staking rewards",
     chain: "Optimism",
-    time: "2025-04-20T11:35:00",
-    amount: "23.5 OP",
-    status: "failed" as const,
-    hash: "0xe67b...3d92",
-    gas: "0.0001 ETH",
+    time: "2025-04-24T22:10:00",
+    amount: "150 OP",
+    gas: "0.001 ETH",
+    status: "failed",
+    hash: "0xijkl...mnop"
   }
 ];
 
+export const filterOptions = [
+  { value: "all", label: "All Activities" },
+  { value: "swap", label: "Swaps" },
+  { value: "bridge", label: "Bridges" },
+  { value: "lend", label: "Lending" },
+  { value: "stake", label: "Staking" },
+  { value: "reward", label: "Rewards" },
+  { value: "borrow", label: "Borrowing" },
+  { value: "withdraw", label: "Withdrawals" }
+];

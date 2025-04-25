@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -20,6 +21,13 @@ import {
   Filter,
   ExternalLink
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
@@ -27,6 +35,7 @@ import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
+import { mockTransactions, filterOptions } from "@/data/activity";
 
 const getTransactionIcon = (type: string) => {
   switch (type) {
@@ -51,14 +60,19 @@ const getTransactionIcon = (type: string) => {
 
 const ActivityPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [transactions] = useState<any[]>([]);
+  const [filterType, setFilterType] = useState("all");
+  const [isLoading] = useState(false);
   
-  const filteredTransactions = transactions.filter(tx => 
-    tx.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tx.type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tx.chain?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTransactions = mockTransactions.filter(tx => {
+    const matchesSearch = 
+      tx.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tx.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tx.chain.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesFilter = filterType === "all" || tx.type === filterType;
+    
+    return matchesSearch && matchesFilter;
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -88,9 +102,18 @@ const ActivityPage = () => {
                   <Clock className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
-              <Button variant="outline" size="icon" disabled={isLoading}>
-                <Filter className="h-4 w-4" />
-              </Button>
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {filterOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -100,7 +123,6 @@ const ActivityPage = () => {
               {isLoading ? (
                 <LoadingSkeleton rows={5} />
               ) : filteredTransactions.length > 0 ? (
-                
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -150,8 +172,8 @@ const ActivityPage = () => {
                 </Table>
               ) : (
                 <EmptyState 
-                  title="No transactions yet" 
-                  description="Start exploring and performing transactions to see your activity here." 
+                  title="No transactions found" 
+                  description="Try adjusting your search or filter criteria." 
                 />
               )}
             </CardContent>
