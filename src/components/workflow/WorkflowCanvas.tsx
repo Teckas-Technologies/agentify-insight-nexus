@@ -1,18 +1,22 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Grid, ZoomIn, ZoomOut, MousePointer, Move, Plus, ArrowRight, Trash2, Clock, CircleEqual } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Grid, ZoomIn, ZoomOut, MousePointer, Move, Plus, ArrowRight, Trash2, Clock, CircleEqual, ArrowLeftRight, Zap, User, Edit, Search, Bell, Wallet, Check, Database, Globe, FileText, Upload, Download, Lock, Users, FileJson, Timer } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useToast } from '@/components/ui/use-toast';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Input } from '@/components/ui/input';
+
+const NODE_WIDTH = 200;
+const NODE_HEIGHT = 100;
 
 interface Node {
   id: string;
   type: string;
-  position: { x: number; y: number };
-  data: any;
+  position: { x: number, y: number };
+  data: {
+    title: string;
+    params?: any;
+  };
 }
 
 interface Connection {
@@ -23,494 +27,546 @@ interface Connection {
   targetHandle?: string;
 }
 
-export const WorkflowCanvas = () => {
-  const [zoom, setZoom] = useState(100);
-  const [showGrid, setShowGrid] = useState(true);
+interface WorkflowCanvasProps {
+  onSelectNode: (node: Node | null) => void;
+  onUpdateNode: (nodeId: string, data: any) => void;
+  onDeleteNode: (nodeId: string) => void;
+}
+
+export const WorkflowCanvas = ({ onSelectNode, onUpdateNode, onDeleteNode }: WorkflowCanvasProps) => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
+  const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
+  const [connectionStart, setConnectionStart] = useState<{ nodeId: string, handle: string } | null>(null);
+  const [connectionPath, setConnectionPath] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const [currentTool, setCurrentTool] = useState<string>("select");
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  const [isCreatingConnection, setIsCreatingConnection] = useState(false);
-  const [connectionStart, setConnectionStart] = useState<{nodeId: string, handle?: string} | null>(null);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [mode, setMode] = useState<'select' | 'connect' | 'pan'>('select');
+  
   const canvasRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-
-  // Listen for template application events
-  useEffect(() => {
-    const handleTemplateApply = (event: any) => {
-      if (event.detail && event.detail.template) {
-        const template = event.detail.template;
-        
-        if (template.nodes && template.nodes.length > 0) {
-          // Apply the template nodes to the canvas
-          setNodes(template.nodes.map((node: any) => ({
-            ...node,
-            id: `node-${node.id}-${Date.now()}`, // Ensure unique IDs
-          })));
-          
-          // If the template has connections, apply those too
-          if (template.connections && template.connections.length > 0) {
-            setConnections(template.connections.map((connection: any) => ({
-              ...connection,
-              id: `connection-${connection.id}-${Date.now()}`,
-            })));
+  
+  // Handle node selection
+  const handleNodeClick = (e: React.MouseEvent, node: Node) => {
+    e.stopPropagation();
+    if (mode === 'select') {
+      setActiveNodeId(node.id);
+      onSelectNode(node);
+    }
+  };
+  
+  // Handle background click to deselect
+  const handleBackgroundClick = () => {
+    setActiveNodeId(null);
+    onSelectNode(null);
+  };
+  
+  // Handle node drag
+  const handleNodeDragStart = (e: React.MouseEvent, nodeId: string) => {
+    if (mode !== 'select') return;
+    
+    e.stopPropagation();
+    setIsDragging(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
+    
+    // Set the active node when starting to drag
+    setActiveNodeId(nodeId);
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      onSelectNode(node);
+    }
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      setNodes(prevNodes => {
+        return prevNodes.map(node => {
+          if (node.id === nodeId) {
+            return {
+              ...node,
+              position: {
+                x: node.position.x + (moveEvent.clientX - dragStart.x) / zoom,
+                y: node.position.y + (moveEvent.clientY - dragStart.y) / zoom
+              }
+            };
           }
+          return node;
+        });
+      });
+      setDragStart({ x: moveEvent.clientX, y: moveEvent.clientY });
+    };
+    
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+  
+  // Handle canvas panning
+  const handleCanvasDragStart = (e: React.MouseEvent) => {
+    if (mode !== 'pan') return;
+    
+    e.preventDefault();
+    setIsDragging(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      setPan(prevPan => ({
+        x: prevPan.x + (moveEvent.clientX - dragStart.x),
+        y: prevPan.y + (moveEvent.clientY - dragStart.y)
+      }));
+      setDragStart({ x: moveEvent.clientX, y: moveEvent.clientY });
+    };
+    
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+  
+  // Handle zoom in/out
+  const handleZoom = (zoomIn: boolean) => {
+    setZoom(prevZoom => {
+      const newZoom = zoomIn ? prevZoom * 1.2 : prevZoom / 1.2;
+      return Math.min(Math.max(newZoom, 0.5), 2);
+    });
+  };
+  
+  // Handle wheel zoom
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+      setZoom(prevZoom => {
+        const newZoom = prevZoom * zoomFactor;
+        return Math.min(Math.max(newZoom, 0.5), 2);
+      });
+    }
+  };
+  
+  // Handle drag over for drop target
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+  
+  // Get node icon based on type
+  const getNodeIcon = (type: string) => {
+    const categoryType = type.split('-')[0];
+    const specificType = type.split('-')[1] || '';
+
+    if (categoryType === 'web3') {
+      if (specificType === 'token') return <Wallet className="h-5 w-5" />;
+      if (specificType === 'defi') return <ArrowLeftRight className="h-5 w-5" />;
+      if (specificType === 'wallet') return <Wallet className="h-5 w-5" />;
+      if (specificType === 'contract') return <FileText className="h-5 w-5" />;
+      if (specificType === 'monitoring') return <Bell className="h-5 w-5" />;
+      return <Zap className="h-5 w-5" />;
+    }
+    
+    if (categoryType === 'web2') {
+      if (specificType === 'social') return <User className="h-5 w-5" />;
+      if (specificType === 'api') return <Globe className="h-5 w-5" />;
+      if (specificType === 'time') return <Clock className="h-5 w-5" />;
+      if (specificType === 'utilities') return <Edit className="h-5 w-5" />;
+      return <Database className="h-5 w-5" />;
+    }
+    
+    return <CircleEqual className="h-5 w-5" />;
+  };
+  
+  // Handle connection start
+  const handleConnectionStart = (e: React.MouseEvent, nodeId: string, handle: string) => {
+    e.stopPropagation();
+    setConnectionStart({ nodeId, handle });
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const canvas = canvasRef.current;
+      if (!canvas || !connectionStart) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const sourceNode = nodes.find(n => n.id === connectionStart.nodeId);
+      
+      if (!sourceNode) return;
+      
+      const startX = (sourceNode.position.x + NODE_WIDTH) * zoom + pan.x;
+      const startY = (sourceNode.position.y + NODE_HEIGHT / 2) * zoom + pan.y;
+      
+      const endX = moveEvent.clientX - rect.left;
+      const endY = moveEvent.clientY - rect.top;
+      
+      // Create a curved path
+      const path = `M ${startX} ${startY} C ${startX + 50} ${startY}, ${endX - 50} ${endY}, ${endX} ${endY}`;
+      
+      setConnectionPath(path);
+    };
+    
+    const handleMouseUp = (upEvent: MouseEvent) => {
+      setConnectionPath(null);
+      
+      if (!connectionStart) return;
+      
+      // Find if we're over a node's left handle (input)
+      const targetElement = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
+      const inputHandle = targetElement?.closest('.connection-point-left');
+      
+      if (inputHandle) {
+        const targetNodeId = inputHandle.getAttribute('data-node-id');
+        
+        if (targetNodeId && targetNodeId !== connectionStart.nodeId) {
+          // Create a new connection
+          const newConnection: Connection = {
+            id: `connection-${Date.now()}`,
+            source: connectionStart.nodeId,
+            target: targetNodeId
+          };
           
-          toast({
-            title: "Template Applied",
-            description: `${template.name} template has been added to the canvas.`
-          });
+          // Check if connection already exists
+          const exists = connections.some(
+            conn => conn.source === newConnection.source && conn.target === newConnection.target
+          );
+          
+          if (!exists) {
+            setConnections([...connections, newConnection]);
+            toast({
+              title: "Connection Created",
+              description: "Nodes connected successfully"
+            });
+          }
         }
       }
+      
+      setConnectionStart(null);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
     };
-
-    // Add event listener
-    document.addEventListener('applyTemplate', handleTemplateApply);
     
-    // Clean up
-    return () => {
-      document.removeEventListener('applyTemplate', handleTemplateApply);
-    };
-  }, [toast]);
-
-  // Handle zoom in and out
-  const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev + 20, 200));
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
-
-  const handleZoomOut = () => {
-    setZoom(prev => Math.max(prev - 20, 40));
-  };
-
-  // Handle drag over event (when dragging over the canvas)
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  // Handle drop event (when dropping an item onto the canvas)
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  
+  // Handle drop of new node from palette
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     
-    // Get node data from the drag event
     const nodeType = e.dataTransfer.getData("node-type");
     const nodeTitle = e.dataTransfer.getData("node-title");
+    const nodeId = e.dataTransfer.getData("node-id");
     
-    if (!nodeType || !canvasRef.current) return;
+    if (!nodeType || !nodeTitle) return;
     
-    // Calculate position based on drop coordinates
-    const rect = canvasRef.current.getBoundingClientRect();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
     
-    // Adjust for canvas position and scroll
-    const x = Math.round((e.clientX - rect.left) / 20) * 20;
-    const y = Math.round((e.clientY - rect.top) / 20) * 20;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left - pan.x) / zoom;
+    const y = (e.clientY - rect.top - pan.y) / zoom;
     
-    // Create a new node with the dropped data
     const newNode: Node = {
-      id: `node-${Date.now()}`,
+      id: `${nodeId}-${Date.now()}`,
       type: nodeType,
       position: { x, y },
       data: { title: nodeTitle }
     };
     
-    setNodes(prev => [...prev, newNode]);
+    setNodes([...nodes, newNode]);
+    setActiveNodeId(newNode.id);
+    onSelectNode(newNode);
     
     toast({
       title: "Node Added",
-      description: `${nodeTitle} node has been added to the workflow.`
+      description: `${nodeTitle} node added to workflow`
     });
   };
-
-  // Handle node selection
-  const handleNodeClick = (nodeId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedNode(nodeId);
-  };
-
-  // Handle node dragging
-  const handleNodeDragStart = (e: React.DragEvent<HTMLDivElement>, nodeId: string) => {
-    e.dataTransfer.setData("node-id", nodeId);
-    setIsDragging(true);
-    if (currentTool === "select") {
-      setSelectedNode(nodeId);
-    }
-  };
-
-  // Handle node title update
-  const handleTitleUpdate = (nodeId: string, newTitle: string) => {
-    setNodes(prevNodes => 
-      prevNodes.map(node => 
-        node.id === nodeId 
-          ? { ...node, data: { ...node.data, title: newTitle } }
-          : node
-      )
-    );
-  };
-
-  // Handle node deletion
-  const handleDeleteNode = (nodeId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Delete any connections that involve this node
-    setConnections(prevConnections => 
-      prevConnections.filter(conn => conn.source !== nodeId && conn.target !== nodeId)
-    );
+  
+  // Apply a template to the canvas
+  const applyTemplate = (template: any) => {
+    if (!template || !template.nodes) return;
     
-    setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
-    if (selectedNode === nodeId) {
-      setSelectedNode(null);
-    }
-    
-    toast({
-      title: "Node Deleted",
-      description: "Node has been removed from the workflow."
-    });
+    // Clear current canvas
+    setNodes(template.nodes);
+    setConnections(template.connections || []);
+    setActiveNodeId(null);
+    onSelectNode(null);
   };
-
-  // Handle click on canvas background - deselect nodes
-  const handleCanvasClick = () => {
-    setSelectedNode(null);
-    if (isCreatingConnection) {
-      setIsCreatingConnection(false);
-      setConnectionStart(null);
-    }
-  };
-
-  // Start creating a connection
-  const handleConnectionStart = (nodeId: string, handle?: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setIsCreatingConnection(true);
-    setConnectionStart({ nodeId, handle });
-  };
-
-  // Complete connection creation
-  const handleConnectionEnd = (nodeId: string, handle?: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
+  
+  // Calculate connection path
+  const calculatePath = (source: Node, target: Node): string => {
+    const startX = (source.position.x + NODE_WIDTH) * zoom + pan.x;
+    const startY = (source.position.y + NODE_HEIGHT / 2) * zoom + pan.y;
     
-    if (!connectionStart || connectionStart.nodeId === nodeId) {
-      setIsCreatingConnection(false);
-      setConnectionStart(null);
-      return;
-    }
+    const endX = source.position.x < target.position.x 
+      ? target.position.x * zoom + pan.x
+      : (target.position.x + NODE_WIDTH) * zoom + pan.x;
+      
+    const endY = (target.position.y + NODE_HEIGHT / 2) * zoom + pan.y;
     
-    // Create a new connection
-    const newConnection: Connection = {
-      id: `connection-${Date.now()}`,
-      source: connectionStart.nodeId,
-      target: nodeId,
-      sourceHandle: connectionStart.handle,
-      targetHandle: handle,
-    };
-    
-    setConnections(prev => [...prev, newConnection]);
-    setIsCreatingConnection(false);
-    setConnectionStart(null);
-    
-    toast({
-      title: "Connection Created",
-      description: "Nodes have been connected successfully."
-    });
+    // Create a curved path
+    return `M ${startX} ${startY} C ${startX + 50} ${startY}, ${endX - 50} ${endY}, ${endX} ${endY}`;
   };
 
   // Delete a connection
   const handleDeleteConnection = (connectionId: string) => {
-    setConnections(prev => prev.filter(conn => conn.id !== connectionId));
+    setConnections(prevConnections => 
+      prevConnections.filter(conn => conn.id !== connectionId)
+    );
     
     toast({
-      title: "Connection Deleted",
-      description: "Connection has been removed from the workflow."
+      title: "Connection Removed",
+      description: "Connection between nodes has been removed"
     });
   };
 
-  // Add a predefined workflow template
-  const addTemplate = () => {
-    const templateNodes: Node[] = [
-      {
-        id: "node-1",
-        type: "triggers",
-        position: { x: 100, y: 100 },
-        data: { title: "Schedule Trigger" }
-      },
-      {
-        id: "node-2",
-        type: "operations",
-        position: { x: 300, y: 100 },
-        data: { title: "MySQL" }
-      },
-      {
-        id: "node-3",
-        type: "utilities",
-        position: { x: 500, y: 100 },
-        data: { title: "Compare Datasets" }
+  // Listen for template application events
+  useEffect(() => {
+    const handleApplyTemplate = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail && customEvent.detail.template) {
+        applyTemplate(customEvent.detail.template);
       }
-    ];
+    };
     
-    const templateConnections: Connection[] = [
-      {
-        id: "connection-1",
-        source: "node-1",
-        target: "node-2"
-      },
-      {
-        id: "connection-2",
-        source: "node-2",
-        target: "node-3"
-      }
-    ];
-    
-    setNodes(templateNodes);
-    setConnections(templateConnections);
-    
-    toast({
-      title: "Template Added",
-      description: "Basic workflow template has been added."
-    });
-  };
-
-  // Calculate connection line path
-  const calculateConnectionPath = (connection: Connection) => {
-    const sourceNode = nodes.find(node => node.id === connection.source);
-    const targetNode = nodes.find(node => node.id === connection.target);
-    
-    if (!sourceNode || !targetNode) return '';
-    
-    // Get source and target positions
-    const sourceX = sourceNode.position.x + 180; // Right side of source node
-    const sourceY = sourceNode.position.y + 30; // Center of source node
-    const targetX = targetNode.position.x; // Left side of target node
-    const targetY = targetNode.position.y + 30; // Center of target node
-    
-    // Calculate control points for the bezier curve
-    const controlPointX1 = sourceX + 50;
-    const controlPointX2 = targetX - 50;
-    
-    // Create a bezier curve path
-    return `M ${sourceX} ${sourceY} C ${controlPointX1} ${sourceY}, ${controlPointX2} ${targetY}, ${targetX} ${targetY}`;
-  };
-
-  // Render connection lines between nodes
-  const renderConnectionLines = () => {
-    return connections.map(connection => {
-      const path = calculateConnectionPath(connection);
-      
-      return (
-        <g key={connection.id} className="connection-group">
-          <path
-            d={path}
-            className="connection-line"
-            stroke="#666"
-            strokeWidth="2"
-            fill="none"
-            markerEnd="url(#arrowhead)"
-          />
-          <path
-            d={path}
-            className="connection-hitbox"
-            stroke="transparent"
-            strokeWidth="10"
-            fill="none"
-            onClick={() => handleDeleteConnection(connection.id)}
-          />
-        </g>
-      );
-    });
-  };
-
-  // Get icon for node type
-  const getNodeIcon = (type: string) => {
-    switch (type) {
-      case 'triggers':
-        return <Clock className="h-5 w-5" />;
-      case 'operations':
-        return <CircleEqual className="h-5 w-5" />;
-      case 'utilities':
-        return <ArrowRight className="h-5 w-5" />;
-      default:
-        return <Plus className="h-5 w-5" />;
-    }
-  };
+    document.addEventListener('applyTemplate', handleApplyTemplate);
+    return () => {
+      document.removeEventListener('applyTemplate', handleApplyTemplate);
+    };
+  }, []);
 
   return (
     <div className="h-full flex flex-col">
-      {/* Canvas Tools */}
-      <div className="p-4 border-b border-white/10 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Button 
-            variant={currentTool === "select" ? "default" : "outline"} 
-            size="sm" 
-            className="flex items-center gap-1 h-8"
-            onClick={() => setCurrentTool("select")}
+      {/* Toolbar */}
+      <div className="p-2 border-b border-white/10 bg-background/90 backdrop-blur-sm flex items-center justify-between">
+        <div className="flex items-center space-x-1">
+          <Button
+            variant={mode === 'select' ? 'secondary' : 'outline'}
+            size="icon"
+            onClick={() => setMode('select')}
+            className="w-8 h-8"
+            title="Select Mode"
           >
-            <MousePointer className="h-3.5 w-3.5" />
-            <span>Select</span>
+            <MousePointer className="h-4 w-4" />
           </Button>
-          <Button 
-            variant={currentTool === "move" ? "default" : "outline"} 
-            size="sm" 
-            className="flex items-center gap-1 h-8"
-            onClick={() => setCurrentTool("move")}
+          <Button
+            variant={mode === 'connect' ? 'secondary' : 'outline'}
+            size="icon"
+            onClick={() => setMode('connect')}
+            className="w-8 h-8"
+            title="Connect Mode"
           >
-            <Move className="h-3.5 w-3.5" />
-            <span>Move</span>
+            <ArrowRight className="h-4 w-4" />
           </Button>
-          <Button 
-            variant={showGrid ? "default" : "outline"} 
-            size="sm" 
-            className="flex items-center gap-1 h-8"
-            onClick={() => setShowGrid(!showGrid)}
+          <Button
+            variant={mode === 'pan' ? 'secondary' : 'outline'}
+            size="icon"
+            onClick={() => setMode('pan')}
+            className="w-8 h-8"
+            title="Pan Mode"
           >
-            <Grid className="h-3.5 w-3.5" />
-            <span>Grid</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex items-center gap-1 h-8 ml-2"
-            onClick={addTemplate}
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Add Template</span>
+            <Move className="h-4 w-4" />
           </Button>
         </div>
-        
-        <div className="flex items-center gap-1">
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleZoomOut}>
-            <ZoomOut className="h-3.5 w-3.5" />
+
+        <div className="flex items-center space-x-1">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => handleZoom(true)}
+            className="w-8 h-8"
+            title="Zoom In"
+          >
+            <ZoomIn className="h-4 w-4" />
           </Button>
-          <span className="px-2 text-sm">{zoom}%</span>
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleZoomIn}>
-            <ZoomIn className="h-3.5 w-3.5" />
+          <span className="text-xs text-muted-foreground mx-2">{Math.round(zoom * 100)}%</span>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => handleZoom(false)}
+            className="w-8 h-8"
+            title="Zoom Out"
+          >
+            <ZoomOut className="h-4 w-4" />
           </Button>
         </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setZoom(1);
+            setPan({ x: 0, y: 0 });
+          }}
+          className="text-xs"
+        >
+          <Grid className="h-3.5 w-3.5 mr-1" />
+          Reset View
+        </Button>
       </div>
       
-      {/* Canvas Area */}
+      {/* Canvas */}
       <div 
-        className="flex-1 overflow-auto p-8 bg-background/50 relative"
+        className="flex-1 relative bg-grid overflow-hidden"
+        onMouseDown={handleCanvasDragStart}
+        onClick={handleBackgroundClick}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        onWheel={handleWheel}
+        ref={canvasRef}
+        style={{ cursor: mode === 'pan' ? 'grab' : 'default' }}
       >
         <div 
-          ref={canvasRef}
-          className={`h-full min-h-[800px] w-full relative ${showGrid ? 'bg-grid' : ''}`}
+          className="absolute inset-0"
           style={{
-            transform: `scale(${zoom / 100})`,
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
             transformOrigin: '0 0',
           }}
-          onClick={handleCanvasClick}
         >
-          {/* SVG for connections */}
-          <svg className="absolute inset-0 h-full w-full pointer-events-none">
-            <defs>
-              <marker 
-                id="arrowhead" 
-                markerWidth="6" 
-                markerHeight="6" 
-                refX="5" 
-                refY="3" 
-                orient="auto"
-                markerUnits="strokeWidth"
+          {/* Render nodes */}
+          {nodes.map(node => {
+            const isActive = node.id === activeNodeId;
+            const nodeCategory = node.type.split('-')[0];
+            
+            return (
+              <div
+                key={node.id}
+                className={`workflow-node absolute rounded-xl shadow-lg duration-100 ${
+                  isActive ? 'ring-2 ring-primary shadow-xl' : ''
+                } ${
+                  nodeCategory === 'web3' 
+                    ? 'bg-[#1E1E2E] border-l-4 border-l-cyan-500/70' 
+                    : 'bg-[#1E1E1E] border-l-4 border-l-purple-500/70'
+                }`}
+                style={{
+                  width: NODE_WIDTH,
+                  height: NODE_HEIGHT,
+                  left: node.position.x,
+                  top: node.position.y,
+                  zIndex: isActive ? 10 : 1,
+                }}
+                onMouseDown={(e) => handleNodeDragStart(e, node.id)}
+                onClick={(e) => handleNodeClick(e, node)}
               >
-                <path d="M 0 0 L 6 3 L 0 6 z" fill="#666" />
-              </marker>
-            </defs>
-            {/* Render connection lines */}
-            {renderConnectionLines()}
-          </svg>
-          
-          {/* Rendered Nodes */}
-          {nodes.map(node => (
-            <div
-              key={node.id}
-              className={`absolute workflow-node rounded-md shadow-lg cursor-move ${
-                selectedNode === node.id ? 'ring-2 ring-primary ring-offset-1 ring-offset-background' : ''
-              } ${
-                node.type === 'triggers' ? 'bg-white border-blue-300' : 
-                node.type === 'operations' ? 'bg-white border-green-300' : 
-                'bg-white border-purple-300'
-              } border`}
-              style={{
-                left: `${node.position.x}px`,
-                top: `${node.position.y}px`,
-                width: '180px',
-                zIndex: selectedNode === node.id ? 20 : 10,
-              }}
-              onClick={(e) => handleNodeClick(node.id, e)}
-              draggable
-              onDragStart={(e) => handleNodeDragStart(e, node.id)}
-            >
-              <div className="p-3">
-                {/* Node Header with Icon */}
-                <div className="flex items-center justify-between mb-2">
-                  <div className={`p-2 rounded-md ${
-                    node.type === 'triggers' ? 'bg-blue-500/10 text-blue-500' : 
-                    node.type === 'operations' ? 'bg-green-500/10 text-green-500' : 
-                    'bg-purple-500/10 text-purple-500'
-                  }`}>
-                    {getNodeIcon(node.type)}
+                <div className="flex flex-col h-full p-3 relative">
+                  <div className="flex items-center mb-2">
+                    <div className={`p-1.5 rounded-md mr-2 ${
+                      nodeCategory === 'web3' ? 'bg-cyan-500/10 text-cyan-400' : 'bg-purple-500/10 text-purple-400'
+                    }`}>
+                      {getNodeIcon(node.type)}
+                    </div>
+                    <span className="font-medium text-sm truncate flex-1">{node.data.title}</span>
+                    <div className={`text-xs px-1.5 py-0.5 rounded-full ${
+                      isActive ? 'bg-primary/20 text-primary' : 'bg-white/10 text-white/70'
+                    }`}>
+                      {node.type.split('-')[1]}
+                    </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-6 w-6 text-gray-500 hover:text-red-500 hover:bg-white/10" 
-                    onClick={(e) => handleDeleteNode(node.id, e)}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-
-                {/* Node Title */}
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <div className="font-medium text-sm text-black hover:underline cursor-pointer">
-                      {node.data.title}
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-60">
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm">Edit Node</h4>
-                      <div>
-                        <label className="text-xs text-muted-foreground">Title</label>
-                        <Input 
-                          value={node.data.title} 
-                          onChange={(e) => handleTitleUpdate(node.id, e.target.value)}
-                          className="mt-1"
-                        />
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                
-                {/* Node Description */}
-                <div className="text-xs text-gray-500 mt-1">
-                  {node.type === 'triggers' ? 'Start your workflow' : 
-                   node.type === 'operations' ? 'Process or transform data' : 
-                   'Utility operation'}
+                  
+                  <div className="text-xs text-gray-400 truncate">
+                    {node.data.params 
+                      ? Object.keys(node.data.params).length > 0 
+                        ? `${Object.keys(node.data.params).length} parameter(s) configured` 
+                        : 'No parameters configured'
+                      : 'No parameters configured'
+                    }
+                  </div>
+                  
+                  {/* Input handle (left) */}
+                  <div 
+                    className="connection-point connection-point-left bg-white/10 hover:bg-primary hover:shadow-[0_0_10px_rgba(0,255,195,0.7)]" 
+                    data-node-id={node.id}
+                    data-handle="input"
+                  />
+                  
+                  {/* Output handle (right) */}
+                  <div 
+                    className="connection-point connection-point-right bg-white/10 hover:bg-primary hover:shadow-[0_0_10px_rgba(0,255,195,0.7)]" 
+                    data-node-id={node.id}
+                    data-handle="output"
+                    onMouseDown={(e) => mode === 'connect' && handleConnectionStart(e, node.id, 'output')}
+                  />
                 </div>
               </div>
-              
-              {/* Connection Points */}
-              <div 
-                className="connection-point connection-point-right"
-                onClick={(e) => handleConnectionStart(node.id, 'right', e)}
-              />
-              <div 
-                className="connection-point connection-point-left"
-                onClick={(e) => handleConnectionEnd(node.id, 'left', e)}
-              />
-            </div>
-          ))}
-          
-          {/* Empty State when no nodes */}
+            );
+          })}
+
+          {/* Empty state */}
           {nodes.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <EmptyState
-                title="Blockchain Workflow Builder"
-                description="Drag and drop nodes from the left panel to build your workflow. Connect nodes to create an automated blockchain process."
-                icon={<Grid className="h-12 w-12 opacity-30" />}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-muted-foreground">
+              <EmptyState 
+                title="Build Your Workflow"
+                description="Drag nodes from the left panel to start building"
+                icon={Plus}
               />
             </div>
           )}
         </div>
+        
+        {/* Connections between nodes (rendered in screen coordinates) */}
+        <svg className="absolute inset-0 pointer-events-none">
+          <defs>
+            <marker 
+              id="arrowhead" 
+              markerWidth="10" 
+              markerHeight="7" 
+              refX="9" 
+              refY="3.5" 
+              orient="auto"
+            >
+              <polygon 
+                points="0 0, 10 3.5, 0 7" 
+                className="fill-cyan-400/70"
+              />
+            </marker>
+          </defs>
+          
+          {connections.map(connection => {
+            const sourceNode = nodes.find(n => n.id === connection.source);
+            const targetNode = nodes.find(n => n.id === connection.target);
+            
+            if (!sourceNode || !targetNode) return null;
+            
+            const path = calculatePath(sourceNode, targetNode);
+            
+            return (
+              <g key={connection.id}>
+                <path 
+                  d={path}
+                  className="connection-line stroke-cyan-400/70"
+                  strokeWidth="2"
+                  fill="none"
+                  markerEnd="url(#arrowhead)"
+                />
+                <path 
+                  d={path}
+                  className="connection-hitbox stroke-transparent"
+                  strokeWidth="12"
+                  fill="none"
+                  onClick={() => handleDeleteConnection(connection.id)}
+                  style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+                />
+              </g>
+            );
+          })}
+          
+          {/* Temporary connection when dragging */}
+          {connectionPath && (
+            <path 
+              d={connectionPath}
+              className="connection-line"
+              strokeWidth="2"
+              fill="none"
+              markerEnd="url(#arrowhead)"
+              strokeDasharray="5,5"
+            />
+          )}
+        </svg>
       </div>
     </div>
   );
