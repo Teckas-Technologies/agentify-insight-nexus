@@ -91,9 +91,40 @@
 
 .workflow-node {
   transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .workflow-node:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Connection points */
+.connection-point {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: theme('colors.primary.DEFAULT');
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: crosshair;
+  z-index: 20;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.connection-point:hover {
+  transform: translate(-50%, -50%) scale(1.5);
+  background-color: theme('colors.primary.DEFAULT');
+}
+
+/* Node animations */
+@keyframes nodeAppear {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.node-appear {
+  animation: nodeAppear 0.3s forwards;
 }

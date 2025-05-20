@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
 
 // Node categories and their nodes
 const nodeCategories = [
@@ -40,9 +41,44 @@ const nodeCategories = [
   },
 ];
 
+// Template definitions with actual node data
+const workflowTemplates = [
+  {
+    id: 'simple-swap',
+    name: 'Simple Swap',
+    icon: ArrowLeftRight,
+    nodes: [
+      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Price Alert' } },
+      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Token Swap' } }
+    ]
+  },
+  {
+    id: 'price-alert-swap',
+    name: 'Price Alert + Swap',
+    icon: FileLineChart,
+    nodes: [
+      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Price Alert' } },
+      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Token Swap' } },
+      { id: 'utility-1', type: 'utilities', position: { x: 500, y: 100 }, data: { title: 'Notification' } }
+    ]
+  },
+  {
+    id: 'contract-watcher',
+    name: 'Contract Watcher',
+    icon: Database,
+    nodes: [
+      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Blockchain Event' } },
+      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Contract Call' } },
+      { id: 'utility-1', type: 'utilities', position: { x: 500, y: 100 }, data: { title: 'Conditional' } },
+      { id: 'utility-2', type: 'utilities', position: { x: 500, y: 250 }, data: { title: 'Notification' } }
+    ]
+  }
+];
+
 export const NodePanel = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  const { toast } = useToast();
   
   // Filter nodes based on search term and active tab
   const filteredNodes = nodeCategories.flatMap(category => {
@@ -57,6 +93,20 @@ export const NodePanel = () => {
     e.dataTransfer.setData("node-type", category);
     e.dataTransfer.setData("node-title", node.name);
     e.dataTransfer.effectAllowed = "move";
+  };
+  
+  // Handle template click - dispatch event to parent
+  const handleTemplateClick = (template: any) => {
+    // Create a custom event that the workflow canvas will listen for
+    const event = new CustomEvent('applyTemplate', { 
+      detail: { template }
+    });
+    document.dispatchEvent(event);
+    
+    toast({
+      title: "Template Applied",
+      description: `${template.name} template has been applied to the canvas.`
+    });
   };
   
   const renderNodeItem = (node: any, category: string) => (
@@ -136,18 +186,17 @@ export const NodePanel = () => {
           <div className="mt-6 border-t border-white/10 pt-6">
             <h3 className="text-sm font-semibold text-muted-foreground mb-3">Quick Templates</h3>
             <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start text-left">
-                <Clock className="h-4 w-4 mr-2" />
-                Simple Swap
-              </Button>
-              <Button variant="outline" className="w-full justify-start text-left">
-                <FileLineChart className="h-4 w-4 mr-2" />
-                Price Alert + Swap
-              </Button>
-              <Button variant="outline" className="w-full justify-start text-left">
-                <Database className="h-4 w-4 mr-2" />
-                Contract Watcher
-              </Button>
+              {workflowTemplates.map(template => (
+                <Button 
+                  key={template.id}
+                  variant="outline" 
+                  className="w-full justify-start text-left hover:bg-white/5"
+                  onClick={() => handleTemplateClick(template)}
+                >
+                  <template.icon className="h-4 w-4 mr-2" />
+                  {template.name}
+                </Button>
+              ))}
             </div>
           </div>
         </ScrollArea>

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Play, Plus, Settings, Grid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,11 +9,29 @@ import Navbar from '@/components/layout/Navbar';
 import { WorkflowCanvas } from '@/components/workflow/WorkflowCanvas';
 import { NodePanel } from '@/components/workflow/NodePanel';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { useToast } from '@/components/ui/use-toast';
 
 const WorkflowBuilder = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [workflowName, setWorkflowName] = useState(id ? "My Blockchain Workflow" : "New Workflow");
+  const [workflowName, setWorkflowName] = useState(id ? `Workflow ${id}` : "New Workflow");
+  const { toast } = useToast();
+  
+  // Handle save workflow action
+  const handleSaveWorkflow = () => {
+    toast({
+      title: "Workflow Saved",
+      description: `${workflowName} has been saved successfully.`
+    });
+  };
+  
+  // Handle test run action
+  const handleTestRun = () => {
+    toast({
+      title: "Test Run Initiated",
+      description: "Running workflow in test environment..."
+    });
+  };
   
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -43,11 +61,18 @@ const WorkflowBuilder = () => {
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>
               </Button>
-              <Button variant="outline" className="flex items-center gap-2 bg-background/50 border-white/10">
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2 bg-background/50 border-white/10"
+                onClick={handleTestRun}
+              >
                 <Play className="h-4 w-4" />
                 <span>Test Run</span>
               </Button>
-              <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90">
+              <Button 
+                className="flex items-center gap-2 bg-primary hover:bg-primary/90"
+                onClick={handleSaveWorkflow}
+              >
                 <Save className="h-4 w-4" />
                 <span>Save Workflow</span>
               </Button>

@@ -1,10 +1,12 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Grid, ZoomIn, ZoomOut, MousePointer, Move, Plus, ArrowRight } from 'lucide-react';
+import { Grid, ZoomIn, ZoomOut, MousePointer, Move, Plus, ArrowRight, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useToast } from '@/components/ui/use-toast';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
 
 interface Node {
   id: string;
@@ -19,6 +21,7 @@ export const WorkflowCanvas = () => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [currentTool, setCurrentTool] = useState<string>("select");
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -69,24 +72,68 @@ export const WorkflowCanvas = () => {
     });
   };
 
+  // Handle node selection
+  const handleNodeClick = (nodeId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedNode(nodeId);
+  };
+
+  // Handle node dragging
+  const handleNodeDragStart = (e: React.DragEvent<HTMLDivElement>, nodeId: string) => {
+    e.dataTransfer.setData("node-id", nodeId);
+    setIsDragging(true);
+    if (currentTool === "select") {
+      setSelectedNode(nodeId);
+    }
+  };
+
+  // Handle node title update
+  const handleTitleUpdate = (nodeId: string, newTitle: string) => {
+    setNodes(prevNodes => 
+      prevNodes.map(node => 
+        node.id === nodeId 
+          ? { ...node, data: { ...node.data, title: newTitle } }
+          : node
+      )
+    );
+  };
+
+  // Handle node deletion
+  const handleDeleteNode = (nodeId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
+    if (selectedNode === nodeId) {
+      setSelectedNode(null);
+    }
+    toast({
+      title: "Node Deleted",
+      description: "Node has been removed from the workflow."
+    });
+  };
+
+  // Handle click on canvas background - deselect nodes
+  const handleCanvasClick = () => {
+    setSelectedNode(null);
+  };
+
   // Add a predefined workflow template
   const addTemplate = () => {
     const templateNodes: Node[] = [
       {
         id: "node-1",
-        type: "trigger",
+        type: "triggers",
         position: { x: 100, y: 100 },
         data: { title: "Price Alert" }
       },
       {
         id: "node-2",
-        type: "operation",
+        type: "operations",
         position: { x: 300, y: 100 },
         data: { title: "Token Swap" }
       },
       {
         id: "node-3",
-        type: "utility",
+        type: "utilities",
         position: { x: 500, y: 100 },
         data: { title: "Notification" }
       }
@@ -167,23 +214,72 @@ export const WorkflowCanvas = () => {
             transform: `scale(${zoom / 100})`,
             transformOrigin: '0 0',
           }}
+          onClick={handleCanvasClick}
         >
           {/* Rendered Nodes */}
           {nodes.map(node => (
             <div
               key={node.id}
-              className={`absolute p-3 rounded-lg shadow-md cursor-move ${
-                node.type === 'trigger' ? 'bg-blue-100 border-blue-300' : 
-                node.type === 'operation' ? 'bg-green-100 border-green-300' : 
-                'bg-purple-100 border-purple-300'
-              } border-2`}
+              className={`absolute workflow-node rounded-md shadow-lg cursor-move ${
+                selectedNode === node.id ? 'ring-2 ring-primary ring-offset-1 ring-offset-background' : ''
+              } ${
+                node.type === 'triggers' ? 'bg-blue-900/80 border-blue-600' : 
+                node.type === 'operations' ? 'bg-green-900/80 border-green-600' : 
+                'bg-purple-900/80 border-purple-600'
+              } border`}
               style={{
                 left: `${node.position.x}px`,
                 top: `${node.position.y}px`,
-                zIndex: 10,
+                minWidth: '180px',
+                zIndex: selectedNode === node.id ? 20 : 10,
               }}
+              onClick={(e) => handleNodeClick(node.id, e)}
+              draggable
+              onDragStart={(e) => handleNodeDragStart(e, node.id)}
             >
-              <div className="font-medium text-sm">{node.data.title}</div>
+              <div className="p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <div className={`px-2 py-0.5 text-xs rounded ${
+                    node.type === 'triggers' ? 'bg-blue-700/60 text-blue-100' : 
+                    node.type === 'operations' ? 'bg-green-700/60 text-green-100' : 
+                    'bg-purple-700/60 text-purple-100'
+                  }`}>
+                    {node.type.charAt(0).toUpperCase() + node.type.slice(1, -1)}
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-6 w-6 text-white/70 hover:text-white hover:bg-white/10" 
+                    onClick={(e) => handleDeleteNode(node.id, e)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <div className="font-medium text-sm text-white hover:underline cursor-pointer">
+                      {node.data.title}
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-60">
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm">Edit Node</h4>
+                      <div>
+                        <label className="text-xs text-muted-foreground">Title</label>
+                        <Input 
+                          value={node.data.title} 
+                          onChange={(e) => handleTitleUpdate(node.id, e.target.value)}
+                          className="mt-1"
+                        />
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="px-3 py-2 bg-black/20 text-xs text-white/70">
+                Double-click to configure
+              </div>
             </div>
           ))}
           
