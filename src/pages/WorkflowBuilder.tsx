@@ -11,11 +11,54 @@ import { NodePanel } from '@/components/workflow/NodePanel';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { useToast } from '@/components/ui/use-toast';
 
+// Mock workflow data for loading specific workflows
+const workflowsData = {
+  'w1': {
+    id: 'w1',
+    name: 'ETH to USDC Swap Pipeline',
+    nodes: [
+      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Price Alert' } },
+      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Token Swap' } }
+    ]
+  },
+  'w2': {
+    id: 'w2',
+    name: 'Daily DeFi Portfolio Rebalancer',
+    nodes: [
+      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Price Alert' } },
+      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Token Swap' } },
+      { id: 'utility-1', type: 'utilities', position: { x: 500, y: 100 }, data: { title: 'Notification' } }
+    ]
+  },
+  'w3': {
+    id: 'w3', 
+    name: 'Cross-chain Bridging Automation',
+    nodes: [
+      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Blockchain Event' } },
+      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Bridge Assets' } }
+    ]
+  }
+};
+
 const WorkflowBuilder = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [workflowName, setWorkflowName] = useState(id ? `Workflow ${id}` : "New Workflow");
   const { toast } = useToast();
+  
+  // Load workflow data if ID is provided
+  useEffect(() => {
+    if (id && workflowsData[id as keyof typeof workflowsData]) {
+      const workflow = workflowsData[id as keyof typeof workflowsData];
+      setWorkflowName(workflow.name);
+      
+      // Create a custom event to load the workflow nodes onto the canvas
+      const event = new CustomEvent('applyTemplate', { 
+        detail: { template: workflow }
+      });
+      document.dispatchEvent(event);
+    }
+  }, [id]);
   
   // Handle save workflow action
   const handleSaveWorkflow = () => {

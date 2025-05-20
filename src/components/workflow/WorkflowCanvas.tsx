@@ -25,6 +25,36 @@ export const WorkflowCanvas = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  // Listen for template application events
+  useEffect(() => {
+    const handleTemplateApply = (event: any) => {
+      if (event.detail && event.detail.template) {
+        const template = event.detail.template;
+        
+        if (template.nodes && template.nodes.length > 0) {
+          // Apply the template nodes to the canvas
+          setNodes(template.nodes.map((node: any) => ({
+            ...node,
+            id: `node-${node.id}-${Date.now()}`, // Ensure unique IDs
+          })));
+          
+          toast({
+            title: "Template Applied",
+            description: `${template.name} template has been added to the canvas.`
+          });
+        }
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('applyTemplate', handleTemplateApply);
+    
+    // Clean up
+    return () => {
+      document.removeEventListener('applyTemplate', handleTemplateApply);
+    };
+  }, [toast]);
+
   // Handle zoom in and out
   const handleZoomIn = () => {
     setZoom(prev => Math.min(prev + 20, 200));
@@ -147,6 +177,12 @@ export const WorkflowCanvas = () => {
     });
   };
 
+  // Render connection lines between nodes (placeholder for future implementation)
+  const renderConnectionLines = () => {
+    // In the future, we'll render connection lines between nodes here
+    return null;
+  };
+
   return (
     <div className="h-full flex flex-col">
       {/* Canvas Tools */}
@@ -216,6 +252,9 @@ export const WorkflowCanvas = () => {
           }}
           onClick={handleCanvasClick}
         >
+          {/* Render connection lines */}
+          {renderConnectionLines()}
+          
           {/* Rendered Nodes */}
           {nodes.map(node => (
             <div
