@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Grid, ZoomIn, ZoomOut, MousePointer, Move, Plus, ArrowRight, Trash2, Clock, CircleEqual, ArrowLeftRight, Zap, User, Edit, Search, Bell, Wallet, Check, Database, Globe, FileText, Upload, Download, Lock, Users, FileJson, Timer } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -158,7 +157,7 @@ export const WorkflowCanvas = ({ onSelectNode, onUpdateNode, onDeleteNode }: Wor
     e.dataTransfer.dropEffect = "move";
   };
   
-  // Get node icon based on type
+  // Get node icon based on type - fixing the icon rendering
   const getNodeIcon = (type: string) => {
     const categoryType = type.split('-')[0];
     const specificType = type.split('-')[1] || '';
