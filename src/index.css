@@ -76,67 +76,47 @@
 }
 
 /* Node connection styles */
-.connection-line {
+.node-connection {
   stroke: theme('colors.primary.DEFAULT');
   stroke-width: 2px;
   fill: none;
-  pointer-events: none;
 }
 
-.connection-hitbox {
-  cursor: pointer;
+/* Neumorphic styling for workflow components */
+.neumorphic-inset {
+  background: rgba(30, 30, 30, 0.6);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.3), 
+              inset -3px -3px 5px rgba(255, 255, 255, 0.05);
 }
 
-.connection-hitbox:hover {
-  stroke: rgba(255, 0, 0, 0.2);
+.workflow-node {
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.workflow-node:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* Connection points */
 .connection-point {
-  position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background-color: #fff;
-  border: 2px solid #666;
+  background-color: theme('colors.primary.DEFAULT');
+  position: absolute;
   transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 30;
+  cursor: crosshair;
+  z-index: 20;
+  border: 2px solid rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
 }
 
 .connection-point:hover {
-  transform: translate(-50%, -50%) scale(1.2);
-  background-color: #ccc;
-}
-
-.connection-point-right {
-  top: 30px;
-  right: -6px;
-  transform: translateY(-50%);
-}
-
-.connection-point-left {
-  top: 30px;
-  left: -6px;
-  transform: translateY(-50%);
-}
-
-.connection-point-right:hover, 
-.connection-point-left:hover {
-  transform: translateY(-50%) scale(1.2);
-}
-
-/* Workflow node styling */
-.workflow-node {
-  transition: all 0.2s ease;
-  background-color: white;
-  color: #333;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.workflow-node:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transform: translate(-50%, -50%) scale(1.5);
+  background-color: theme('colors.primary.DEFAULT');
 }
 
 /* Node animations */
