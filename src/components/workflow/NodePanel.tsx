@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, ArrowLeftRight, Wallet, Database, Layers, ArrowDown, Clock, Zap, FileLineChart, Calendar, User, Edit, Plus, Minus, Settings, Compare, Calendar as DateIcon, Clock as TimeIcon } from 'lucide-react';
+import { Search, ArrowLeftRight, Wallet, CircleEqual, Layers, ArrowDown, Clock, Zap, FileLineChart, Calendar, User, Edit, Plus, Minus, Settings, BarChart2, Calendar as DateIcon, Clock as TimeIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -23,7 +23,7 @@ const nodeCategories = [
     id: 'operations',
     name: 'Operations',
     nodes: [
-      { id: 'mysql', name: 'MySQL', icon: Database, description: 'Execute SQL queries' },
+      { id: 'mysql', name: 'MySQL', icon: CircleEqual, description: 'Execute SQL queries' },
       { id: 'bridge', name: 'Bridge Assets', icon: Layers, description: 'Bridge assets between chains' },
       { id: 'person', name: 'Create Person', icon: User, description: 'Create a person record' },
       { id: 'contact', name: 'Create Contact', icon: User, description: 'Create a contact record' },
@@ -33,7 +33,7 @@ const nodeCategories = [
     id: 'utilities',
     name: 'Utilities',
     nodes: [
-      { id: 'compare', name: 'Compare Datasets', icon: Compare, description: 'Compare two data inputs' },
+      { id: 'compare', name: 'Compare Datasets', icon: BarChart2, description: 'Compare two data inputs' },
       { id: 'date', name: 'Date & Time', icon: Calendar, description: 'Format date and time' },
       { id: 'set', name: 'Set Variable', icon: Edit, description: 'Set input variables' },
       { id: 'condition', name: 'Condition', icon: ArrowLeftRight, description: 'Add conditional logic' },
@@ -58,7 +58,7 @@ const workflowTemplates = [
   {
     id: 'data-pipeline',
     name: 'Data Pipeline',
-    icon: Database,
+    icon: CircleEqual,
     nodes: [
       { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Schedule Trigger' } },
       { id: 'operation-1', type: 'operations', position: { x: 350, y: 100 }, data: { title: 'MySQL' } },

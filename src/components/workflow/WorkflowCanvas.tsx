@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Grid, ZoomIn, ZoomOut, MousePointer, Move, Plus, ArrowRight, Trash2 } from 'lucide-react';
+import { Grid, ZoomIn, ZoomOut, MousePointer, Move, Plus, ArrowRight, Trash2, Clock, CircleEqual } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -321,7 +321,7 @@ export const WorkflowCanvas = () => {
       case 'triggers':
         return <Clock className="h-5 w-5" />;
       case 'operations':
-        return <Database className="h-5 w-5" />;
+        return <CircleEqual className="h-5 w-5" />;
       case 'utilities':
         return <ArrowRight className="h-5 w-5" />;
       default:
