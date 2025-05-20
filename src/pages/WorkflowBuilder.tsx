@@ -18,7 +18,10 @@ const workflowsData = {
     name: 'ETH to USDC Swap Pipeline',
     nodes: [
       { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Price Alert' } },
-      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Token Swap' } }
+      { id: 'operation-1', type: 'operations', position: { x: 350, y: 100 }, data: { title: 'Token Swap' } }
+    ],
+    connections: [
+      { id: 'connection-1', source: 'trigger-1', target: 'operation-1' }
     ]
   },
   'w2': {
@@ -26,8 +29,12 @@ const workflowsData = {
     name: 'Daily DeFi Portfolio Rebalancer',
     nodes: [
       { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Price Alert' } },
-      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Token Swap' } },
-      { id: 'utility-1', type: 'utilities', position: { x: 500, y: 100 }, data: { title: 'Notification' } }
+      { id: 'operation-1', type: 'operations', position: { x: 350, y: 100 }, data: { title: 'Token Swap' } },
+      { id: 'utility-1', type: 'utilities', position: { x: 600, y: 100 }, data: { title: 'Notification' } }
+    ],
+    connections: [
+      { id: 'connection-1', source: 'trigger-1', target: 'operation-1' },
+      { id: 'connection-2', source: 'operation-1', target: 'utility-1' }
     ]
   },
   'w3': {
@@ -35,7 +42,10 @@ const workflowsData = {
     name: 'Cross-chain Bridging Automation',
     nodes: [
       { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Blockchain Event' } },
-      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Bridge Assets' } }
+      { id: 'operation-1', type: 'operations', position: { x: 350, y: 100 }, data: { title: 'Bridge Assets' } }
+    ],
+    connections: [
+      { id: 'connection-1', source: 'trigger-1', target: 'operation-1' }
     ]
   }
 };

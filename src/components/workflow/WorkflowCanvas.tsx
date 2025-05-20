@@ -15,13 +15,24 @@ interface Node {
   data: any;
 }
 
+interface Connection {
+  id: string;
+  source: string;
+  target: string;
+  sourceHandle?: string;
+  targetHandle?: string;
+}
+
 export const WorkflowCanvas = () => {
   const [zoom, setZoom] = useState(100);
   const [showGrid, setShowGrid] = useState(true);
   const [nodes, setNodes] = useState<Node[]>([]);
+  const [connections, setConnections] = useState<Connection[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [currentTool, setCurrentTool] = useState<string>("select");
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [isCreatingConnection, setIsCreatingConnection] = useState(false);
+  const [connectionStart, setConnectionStart] = useState<{nodeId: string, handle?: string} | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -37,6 +48,14 @@ export const WorkflowCanvas = () => {
             ...node,
             id: `node-${node.id}-${Date.now()}`, // Ensure unique IDs
           })));
+          
+          // If the template has connections, apply those too
+          if (template.connections && template.connections.length > 0) {
+            setConnections(template.connections.map((connection: any) => ({
+              ...connection,
+              id: `connection-${connection.id}-${Date.now()}`,
+            })));
+          }
           
           toast({
             title: "Template Applied",
@@ -131,10 +150,16 @@ export const WorkflowCanvas = () => {
   // Handle node deletion
   const handleDeleteNode = (nodeId: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    // Delete any connections that involve this node
+    setConnections(prevConnections => 
+      prevConnections.filter(conn => conn.source !== nodeId && conn.target !== nodeId)
+    );
+    
     setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
     if (selectedNode === nodeId) {
       setSelectedNode(null);
     }
+    
     toast({
       title: "Node Deleted",
       description: "Node has been removed from the workflow."
@@ -144,6 +169,56 @@ export const WorkflowCanvas = () => {
   // Handle click on canvas background - deselect nodes
   const handleCanvasClick = () => {
     setSelectedNode(null);
+    if (isCreatingConnection) {
+      setIsCreatingConnection(false);
+      setConnectionStart(null);
+    }
+  };
+
+  // Start creating a connection
+  const handleConnectionStart = (nodeId: string, handle?: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setIsCreatingConnection(true);
+    setConnectionStart({ nodeId, handle });
+  };
+
+  // Complete connection creation
+  const handleConnectionEnd = (nodeId: string, handle?: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    
+    if (!connectionStart || connectionStart.nodeId === nodeId) {
+      setIsCreatingConnection(false);
+      setConnectionStart(null);
+      return;
+    }
+    
+    // Create a new connection
+    const newConnection: Connection = {
+      id: `connection-${Date.now()}`,
+      source: connectionStart.nodeId,
+      target: nodeId,
+      sourceHandle: connectionStart.handle,
+      targetHandle: handle,
+    };
+    
+    setConnections(prev => [...prev, newConnection]);
+    setIsCreatingConnection(false);
+    setConnectionStart(null);
+    
+    toast({
+      title: "Connection Created",
+      description: "Nodes have been connected successfully."
+    });
+  };
+
+  // Delete a connection
+  const handleDeleteConnection = (connectionId: string) => {
+    setConnections(prev => prev.filter(conn => conn.id !== connectionId));
+    
+    toast({
+      title: "Connection Deleted",
+      description: "Connection has been removed from the workflow."
+    });
   };
 
   // Add a predefined workflow template
@@ -153,23 +228,37 @@ export const WorkflowCanvas = () => {
         id: "node-1",
         type: "triggers",
         position: { x: 100, y: 100 },
-        data: { title: "Price Alert" }
+        data: { title: "Schedule Trigger" }
       },
       {
         id: "node-2",
         type: "operations",
         position: { x: 300, y: 100 },
-        data: { title: "Token Swap" }
+        data: { title: "MySQL" }
       },
       {
         id: "node-3",
         type: "utilities",
         position: { x: 500, y: 100 },
-        data: { title: "Notification" }
+        data: { title: "Compare Datasets" }
+      }
+    ];
+    
+    const templateConnections: Connection[] = [
+      {
+        id: "connection-1",
+        source: "node-1",
+        target: "node-2"
+      },
+      {
+        id: "connection-2",
+        source: "node-2",
+        target: "node-3"
       }
     ];
     
     setNodes(templateNodes);
+    setConnections(templateConnections);
     
     toast({
       title: "Template Added",
@@ -177,10 +266,67 @@ export const WorkflowCanvas = () => {
     });
   };
 
-  // Render connection lines between nodes (placeholder for future implementation)
+  // Calculate connection line path
+  const calculateConnectionPath = (connection: Connection) => {
+    const sourceNode = nodes.find(node => node.id === connection.source);
+    const targetNode = nodes.find(node => node.id === connection.target);
+    
+    if (!sourceNode || !targetNode) return '';
+    
+    // Get source and target positions
+    const sourceX = sourceNode.position.x + 180; // Right side of source node
+    const sourceY = sourceNode.position.y + 30; // Center of source node
+    const targetX = targetNode.position.x; // Left side of target node
+    const targetY = targetNode.position.y + 30; // Center of target node
+    
+    // Calculate control points for the bezier curve
+    const controlPointX1 = sourceX + 50;
+    const controlPointX2 = targetX - 50;
+    
+    // Create a bezier curve path
+    return `M ${sourceX} ${sourceY} C ${controlPointX1} ${sourceY}, ${controlPointX2} ${targetY}, ${targetX} ${targetY}`;
+  };
+
+  // Render connection lines between nodes
   const renderConnectionLines = () => {
-    // In the future, we'll render connection lines between nodes here
-    return null;
+    return connections.map(connection => {
+      const path = calculateConnectionPath(connection);
+      
+      return (
+        <g key={connection.id} className="connection-group">
+          <path
+            d={path}
+            className="connection-line"
+            stroke="#666"
+            strokeWidth="2"
+            fill="none"
+            markerEnd="url(#arrowhead)"
+          />
+          <path
+            d={path}
+            className="connection-hitbox"
+            stroke="transparent"
+            strokeWidth="10"
+            fill="none"
+            onClick={() => handleDeleteConnection(connection.id)}
+          />
+        </g>
+      );
+    });
+  };
+
+  // Get icon for node type
+  const getNodeIcon = (type: string) => {
+    switch (type) {
+      case 'triggers':
+        return <Clock className="h-5 w-5" />;
+      case 'operations':
+        return <Database className="h-5 w-5" />;
+      case 'utilities':
+        return <ArrowRight className="h-5 w-5" />;
+      default:
+        return <Plus className="h-5 w-5" />;
+    }
   };
 
   return (
@@ -252,8 +398,24 @@ export const WorkflowCanvas = () => {
           }}
           onClick={handleCanvasClick}
         >
-          {/* Render connection lines */}
-          {renderConnectionLines()}
+          {/* SVG for connections */}
+          <svg className="absolute inset-0 h-full w-full pointer-events-none">
+            <defs>
+              <marker 
+                id="arrowhead" 
+                markerWidth="6" 
+                markerHeight="6" 
+                refX="5" 
+                refY="3" 
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <path d="M 0 0 L 6 3 L 0 6 z" fill="#666" />
+              </marker>
+            </defs>
+            {/* Render connection lines */}
+            {renderConnectionLines()}
+          </svg>
           
           {/* Rendered Nodes */}
           {nodes.map(node => (
@@ -262,14 +424,14 @@ export const WorkflowCanvas = () => {
               className={`absolute workflow-node rounded-md shadow-lg cursor-move ${
                 selectedNode === node.id ? 'ring-2 ring-primary ring-offset-1 ring-offset-background' : ''
               } ${
-                node.type === 'triggers' ? 'bg-blue-900/80 border-blue-600' : 
-                node.type === 'operations' ? 'bg-green-900/80 border-green-600' : 
-                'bg-purple-900/80 border-purple-600'
+                node.type === 'triggers' ? 'bg-white border-blue-300' : 
+                node.type === 'operations' ? 'bg-white border-green-300' : 
+                'bg-white border-purple-300'
               } border`}
               style={{
                 left: `${node.position.x}px`,
                 top: `${node.position.y}px`,
-                minWidth: '180px',
+                width: '180px',
                 zIndex: selectedNode === node.id ? 20 : 10,
               }}
               onClick={(e) => handleNodeClick(node.id, e)}
@@ -277,27 +439,29 @@ export const WorkflowCanvas = () => {
               onDragStart={(e) => handleNodeDragStart(e, node.id)}
             >
               <div className="p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <div className={`px-2 py-0.5 text-xs rounded ${
-                    node.type === 'triggers' ? 'bg-blue-700/60 text-blue-100' : 
-                    node.type === 'operations' ? 'bg-green-700/60 text-green-100' : 
-                    'bg-purple-700/60 text-purple-100'
+                {/* Node Header with Icon */}
+                <div className="flex items-center justify-between mb-2">
+                  <div className={`p-2 rounded-md ${
+                    node.type === 'triggers' ? 'bg-blue-500/10 text-blue-500' : 
+                    node.type === 'operations' ? 'bg-green-500/10 text-green-500' : 
+                    'bg-purple-500/10 text-purple-500'
                   }`}>
-                    {node.type.charAt(0).toUpperCase() + node.type.slice(1, -1)}
+                    {getNodeIcon(node.type)}
                   </div>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-6 w-6 text-white/70 hover:text-white hover:bg-white/10" 
+                    className="h-6 w-6 text-gray-500 hover:text-red-500 hover:bg-white/10" 
                     onClick={(e) => handleDeleteNode(node.id, e)}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
 
+                {/* Node Title */}
                 <Popover>
                   <PopoverTrigger asChild>
-                    <div className="font-medium text-sm text-white hover:underline cursor-pointer">
+                    <div className="font-medium text-sm text-black hover:underline cursor-pointer">
                       {node.data.title}
                     </div>
                   </PopoverTrigger>
@@ -315,10 +479,24 @@ export const WorkflowCanvas = () => {
                     </div>
                   </PopoverContent>
                 </Popover>
+                
+                {/* Node Description */}
+                <div className="text-xs text-gray-500 mt-1">
+                  {node.type === 'triggers' ? 'Start your workflow' : 
+                   node.type === 'operations' ? 'Process or transform data' : 
+                   'Utility operation'}
+                </div>
               </div>
-              <div className="px-3 py-2 bg-black/20 text-xs text-white/70">
-                Double-click to configure
-              </div>
+              
+              {/* Connection Points */}
+              <div 
+                className="connection-point connection-point-right"
+                onClick={(e) => handleConnectionStart(node.id, 'right', e)}
+              />
+              <div 
+                className="connection-point connection-point-left"
+                onClick={(e) => handleConnectionEnd(node.id, 'left', e)}
+              />
             </div>
           ))}
           
