@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, ArrowLeftRight, Wallet, Database, Layers, ArrowDown, Clock, Zap, FileLineChart } from 'lucide-react';
+import { Search, ArrowLeftRight, Wallet, Database, Layers, ArrowDown, Clock, Zap, FileLineChart, Calendar, User, Edit, Plus, Minus, Settings, Compare, Calendar as DateIcon, Clock as TimeIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,7 +13,7 @@ const nodeCategories = [
     id: 'triggers',
     name: 'Triggers',
     nodes: [
-      { id: 'time-trigger', name: 'Time Trigger', icon: Clock, description: 'Run workflow at specified times' },
+      { id: 'schedule-trigger', name: 'Schedule Trigger', icon: Clock, description: 'Run workflow at specified times' },
       { id: 'event-trigger', name: 'Blockchain Event', icon: Zap, description: 'Triggered by blockchain events' },
       { id: 'webhook-trigger', name: 'Webhook', icon: ArrowDown, description: 'Triggered by external webhook' },
       { id: 'price-trigger', name: 'Price Alert', icon: FileLineChart, description: 'Triggered by price changes' },
@@ -23,20 +23,20 @@ const nodeCategories = [
     id: 'operations',
     name: 'Operations',
     nodes: [
-      { id: 'swap', name: 'Token Swap', icon: ArrowLeftRight, description: 'Swap between tokens' },
+      { id: 'mysql', name: 'MySQL', icon: Database, description: 'Execute SQL queries' },
       { id: 'bridge', name: 'Bridge Assets', icon: Layers, description: 'Bridge assets between chains' },
-      { id: 'wallet', name: 'Wallet Operation', icon: Wallet, description: 'Interact with wallets' },
-      { id: 'contract-call', name: 'Contract Call', icon: Database, description: 'Call smart contract functions' },
+      { id: 'person', name: 'Create Person', icon: User, description: 'Create a person record' },
+      { id: 'contact', name: 'Create Contact', icon: User, description: 'Create a contact record' },
     ]
   },
   {
     id: 'utilities',
     name: 'Utilities',
     nodes: [
-      { id: 'conditional', name: 'Conditional', icon: ArrowLeftRight, description: 'Add conditional logic' },
-      { id: 'delay', name: 'Delay', icon: Clock, description: 'Add delay between steps' },
-      { id: 'transform', name: 'Transform Data', icon: ArrowLeftRight, description: 'Transform data between nodes' },
-      { id: 'notification', name: 'Notification', icon: Zap, description: 'Send notifications' },
+      { id: 'compare', name: 'Compare Datasets', icon: Compare, description: 'Compare two data inputs' },
+      { id: 'date', name: 'Date & Time', icon: Calendar, description: 'Format date and time' },
+      { id: 'set', name: 'Set Variable', icon: Edit, description: 'Set input variables' },
+      { id: 'condition', name: 'Condition', icon: ArrowLeftRight, description: 'Add conditional logic' },
     ]
   },
 ];
@@ -48,29 +48,39 @@ const workflowTemplates = [
     name: 'Simple Swap',
     icon: ArrowLeftRight,
     nodes: [
-      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Price Alert' } },
-      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Token Swap' } }
+      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Schedule Trigger' } },
+      { id: 'operation-1', type: 'operations', position: { x: 350, y: 100 }, data: { title: 'MySQL' } }
+    ],
+    connections: [
+      { id: 'connection-1', source: 'trigger-1', target: 'operation-1' }
     ]
   },
   {
-    id: 'price-alert-swap',
-    name: 'Price Alert + Swap',
-    icon: FileLineChart,
-    nodes: [
-      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Price Alert' } },
-      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Token Swap' } },
-      { id: 'utility-1', type: 'utilities', position: { x: 500, y: 100 }, data: { title: 'Notification' } }
-    ]
-  },
-  {
-    id: 'contract-watcher',
-    name: 'Contract Watcher',
+    id: 'data-pipeline',
+    name: 'Data Pipeline',
     icon: Database,
     nodes: [
-      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Blockchain Event' } },
-      { id: 'operation-1', type: 'operations', position: { x: 300, y: 100 }, data: { title: 'Contract Call' } },
-      { id: 'utility-1', type: 'utilities', position: { x: 500, y: 100 }, data: { title: 'Conditional' } },
-      { id: 'utility-2', type: 'utilities', position: { x: 500, y: 250 }, data: { title: 'Notification' } }
+      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Schedule Trigger' } },
+      { id: 'operation-1', type: 'operations', position: { x: 350, y: 100 }, data: { title: 'MySQL' } },
+      { id: 'utility-1', type: 'utilities', position: { x: 600, y: 100 }, data: { title: 'Compare Datasets' } }
+    ],
+    connections: [
+      { id: 'connection-1', source: 'trigger-1', target: 'operation-1' },
+      { id: 'connection-2', source: 'operation-1', target: 'utility-1' }
+    ]
+  },
+  {
+    id: 'person-flow',
+    name: 'Person Pipeline',
+    icon: User,
+    nodes: [
+      { id: 'trigger-1', type: 'triggers', position: { x: 100, y: 100 }, data: { title: 'Schedule Trigger' } },
+      { id: 'operation-1', type: 'operations', position: { x: 350, y: 100 }, data: { title: 'Create Person' } },
+      { id: 'utility-1', type: 'utilities', position: { x: 600, y: 100 }, data: { title: 'Set Variable' } }
+    ],
+    connections: [
+      { id: 'connection-1', source: 'trigger-1', target: 'operation-1' },
+      { id: 'connection-2', source: 'operation-1', target: 'utility-1' }
     ]
   }
 ];
