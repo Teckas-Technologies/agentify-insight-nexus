@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Terminal, LayoutDashboard, Command, Code, Layers, Wallet } from "lucide-react";
+import { Terminal, LayoutDashboard, Workflow, Activity, Layers, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NavLink from "./NavLink";
 
@@ -21,21 +21,21 @@ const Navbar: React.FC = () => {
             <Terminal className="h-5 w-5 text-primary" />
           </div>
           <h1 className="text-xl font-bold bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent">
-            Agentify
+            Agentify Flow
           </h1>
         </div>
         <nav className="hidden md:flex items-center gap-6">
           <NavLink to="/" icon={LayoutDashboard}>
             Dashboard
           </NavLink>
-          <NavLink to="/playground" icon={Command}>
-            Playground
+          <NavLink to="/workflow-builder" icon={Workflow}>
+            Workflows
           </NavLink>
-          <NavLink to="/agents" icon={Code}>
-            Agents
-          </NavLink>
-          <NavLink to="/activity" icon={Layers}>
+          <NavLink to="/activity" icon={Activity}>
             Activity
+          </NavLink>
+          <NavLink to="/agents" icon={Layers}>
+            Modules
           </NavLink>
         </nav>
         <Button 
