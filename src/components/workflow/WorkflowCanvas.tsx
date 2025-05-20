@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Grid, ZoomIn, ZoomOut, MousePointer, Move, Plus, ArrowRight, Trash2, Clock, CircleEqual, ArrowLeftRight, Zap, User, Edit, Search, Bell, Wallet, Check, Database, Globe, FileText, Upload, Download, Lock, Users, FileJson, Timer } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -32,7 +33,7 @@ interface WorkflowCanvasProps {
   onDeleteNode: (nodeId: string) => void;
 }
 
-export const WorkflowCanvas = ({ onSelectNode, onUpdateNode, onDeleteNode }: WorkflowCanvasProps) => {
+export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({ onSelectNode, onUpdateNode, onDeleteNode }) => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
@@ -570,3 +571,6 @@ export const WorkflowCanvas = ({ onSelectNode, onUpdateNode, onDeleteNode }: Wor
     </div>
   );
 };
+
+// Make sure we have a default export as well for backward compatibility
+export default WorkflowCanvas;
