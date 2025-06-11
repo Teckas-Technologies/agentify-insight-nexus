@@ -9,12 +9,6 @@ const userGrowthData = [
   { month: "Apr", users: 2135, newUsers: 567 },
   { month: "May", users: 2736, newUsers: 601 },
   { month: "Jun", users: 3470, newUsers: 734 },
-  { month: "Jul", users: 4538, newUsers: 1068 },
-  { month: "Aug", users: 5473, newUsers: 935 },
-  { month: "Sep", users: 6608, newUsers: 1135 },
-  { month: "Oct", users: 7473, newUsers: 865 },
-  { month: "Nov", users: 8073, newUsers: 600 },
-  { month: "Dec", users: 8547, newUsers: 474 },
 ];
 
 export const UserGrowthChart = () => {

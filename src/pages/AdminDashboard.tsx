@@ -12,11 +12,10 @@ import { Users, Activity, DollarSign, TrendingUp, Zap, Globe } from "lucide-reac
 
 // Mock data - in a real app, this would come from your API
 const analyticsData = {
-  totalUsers: 8547,
+  totalUsers: 3470,
   totalTransactions: 16690,
   totalVolume: 103000,
   activeAgents: 5,
-  avgTransactionValue: 6.2,
   userGrowth: 11.8,
   volumeGrowth: 16.5,
 };
@@ -37,7 +36,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Users"
             value={analyticsData.totalUsers.toLocaleString()}
@@ -60,12 +59,6 @@ const AdminDashboard = () => {
             title="Active Agents"
             value={analyticsData.activeAgents}
             icon={<Zap className="h-5 w-5" />}
-          />
-          <StatCard
-            title="Avg Transaction"
-            value={`$${analyticsData.avgTransactionValue}`}
-            icon={<Globe className="h-5 w-5" />}
-            trend={{ value: 1.8, isPositive: true }}
           />
         </div>
 
@@ -171,7 +164,7 @@ const AdminDashboard = () => {
                     data={[
                       { name: "Daily", value: 385 },
                       { name: "Weekly", value: 1420 },
-                      { name: "Monthly", value: 8547 },
+                      { name: "Monthly", value: 3470 },
                     ]}
                     title="Active Users"
                     yAxisLabel="Users"
