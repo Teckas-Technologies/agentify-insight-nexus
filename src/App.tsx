@@ -11,7 +11,6 @@ import NotFound from "./pages/NotFound";
 import ActivityPage from "./pages/Activity";
 import CommandsPage from "./pages/Commands";
 import TransactionsPage from "./pages/Transactions";
-import WorkflowBuilder from "./pages/WorkflowBuilder";
 import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
@@ -29,8 +28,6 @@ const App = () => (
           <Route path="/activity" element={<ActivityPage />} />
           <Route path="/commands" element={<CommandsPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
-          <Route path="/workflow-builder" element={<WorkflowBuilder />} />
-          <Route path="/workflow-builder/:id" element={<WorkflowBuilder />} />
           <Route path="/admin" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
