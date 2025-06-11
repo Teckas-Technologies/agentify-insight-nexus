@@ -3,13 +3,13 @@ import React from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const chainData = [
-  { name: "Ethereum", volume: 1250000, transactions: 15234 },
-  { name: "Arbitrum", volume: 890000, transactions: 23456 },
-  { name: "Polygon", volume: 650000, transactions: 18567 },
-  { name: "Optimism", volume: 420000, transactions: 9834 },
-  { name: "Base", volume: 380000, transactions: 12456 },
-  { name: "BSC", volume: 290000, transactions: 7892 },
-  { name: "Avalanche", volume: 180000, transactions: 5234 },
+  { name: "Ethereum", volume: 32000, transactions: 4200 },
+  { name: "Arbitrum", volume: 23500, transactions: 3890 },
+  { name: "Polygon", volume: 18200, transactions: 2950 },
+  { name: "Optimism", volume: 12800, transactions: 1680 },
+  { name: "Base", volume: 9200, transactions: 1890 },
+  { name: "BSC", volume: 4800, transactions: 1230 },
+  { name: "Avalanche", volume: 2500, transactions: 850 },
 ];
 
 export const TopChainsChart = () => {

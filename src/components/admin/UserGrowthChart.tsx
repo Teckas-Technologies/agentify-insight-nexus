@@ -3,18 +3,18 @@ import React from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const userGrowthData = [
-  { month: "Jan", users: 1200, newUsers: 250 },
-  { month: "Feb", users: 1680, newUsers: 480 },
-  { month: "Mar", users: 2350, newUsers: 670 },
-  { month: "Apr", users: 3200, newUsers: 850 },
-  { month: "May", users: 4100, newUsers: 900 },
-  { month: "Jun", users: 5200, newUsers: 1100 },
-  { month: "Jul", users: 6800, newUsers: 1600 },
-  { month: "Aug", users: 8200, newUsers: 1400 },
-  { month: "Sep", users: 9900, newUsers: 1700 },
-  { month: "Oct", users: 11200, newUsers: 1300 },
-  { month: "Nov", users: 12100, newUsers: 900 },
-  { month: "Dec", users: 12847, newUsers: 747 },
+  { month: "Jan", users: 800, newUsers: 180 },
+  { month: "Feb", users: 1120, newUsers: 320 },
+  { month: "Mar", users: 1568, newUsers: 448 },
+  { month: "Apr", users: 2135, newUsers: 567 },
+  { month: "May", users: 2736, newUsers: 601 },
+  { month: "Jun", users: 3470, newUsers: 734 },
+  { month: "Jul", users: 4538, newUsers: 1068 },
+  { month: "Aug", users: 5473, newUsers: 935 },
+  { month: "Sep", users: 6608, newUsers: 1135 },
+  { month: "Oct", users: 7473, newUsers: 865 },
+  { month: "Nov", users: 8073, newUsers: 600 },
+  { month: "Dec", users: 8547, newUsers: 474 },
 ];
 
 export const UserGrowthChart = () => {

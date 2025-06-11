@@ -12,13 +12,13 @@ import { Users, Activity, DollarSign, TrendingUp, Zap, Globe } from "lucide-reac
 
 // Mock data - in a real app, this would come from your API
 const analyticsData = {
-  totalUsers: 3247,
-  totalTransactions: 15923,
-  totalVolume: 102847.45,
+  totalUsers: 8547,
+  totalTransactions: 16690,
+  totalVolume: 103000,
   activeAgents: 5,
-  avgTransactionValue: 6.5,
-  userGrowth: 12.5,
-  volumeGrowth: 18.2,
+  avgTransactionValue: 6.2,
+  userGrowth: 11.8,
+  volumeGrowth: 16.5,
 };
 
 const AdminDashboard = () => {
@@ -48,11 +48,11 @@ const AdminDashboard = () => {
             title="Total Transactions"
             value={analyticsData.totalTransactions.toLocaleString()}
             icon={<Activity className="h-5 w-5" />}
-            trend={{ value: 8.3, isPositive: true }}
+            trend={{ value: 7.8, isPositive: true }}
           />
           <StatCard
             title="Volume (USD)"
-            value={`$${(analyticsData.totalVolume / 1000).toFixed(1)}K`}
+            value={`$${(analyticsData.totalVolume / 1000).toFixed(0)}K`}
             icon={<DollarSign className="h-5 w-5" />}
             trend={{ value: analyticsData.volumeGrowth, isPositive: true }}
           />
@@ -65,7 +65,7 @@ const AdminDashboard = () => {
             title="Avg Transaction"
             value={`$${analyticsData.avgTransactionValue}`}
             icon={<Globe className="h-5 w-5" />}
-            trend={{ value: 2.1, isPositive: true }}
+            trend={{ value: 1.8, isPositive: true }}
           />
         </div>
 
@@ -107,9 +107,9 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <AgentUsageChart data={[
-                    { name: "Swap Agent", value: 45, color: "hsl(262, 83.3%, 57.8%)" },
+                    { name: "Swap Agent", value: 42, color: "hsl(262, 83.3%, 57.8%)" },
                     { name: "Bridge Agent", value: 28, color: "hsl(12, 76.4%, 64.7%)" },
-                    { name: "Lending Agent", value: 15, color: "hsl(142, 76.2%, 36.3%)" },
+                    { name: "Lending Agent", value: 18, color: "hsl(142, 76.2%, 36.3%)" },
                     { name: "Staking Agent", value: 12, color: "hsl(48, 96%, 53%)" },
                   ]} />
                 </CardContent>
@@ -122,12 +122,12 @@ const AdminDashboard = () => {
                 <CardContent>
                   <BarChartComponent 
                     data={[
-                      { name: "Jan", value: 8.2 },
-                      { name: "Feb", value: 9.8 },
-                      { name: "Mar", value: 12.4 },
-                      { name: "Apr", value: 15.7 },
-                      { name: "May", value: 18.9 },
-                      { name: "Jun", value: 22.1 },
+                      { name: "Jan", value: 12.2 },
+                      { name: "Feb", value: 14.8 },
+                      { name: "Mar", value: 18.4 },
+                      { name: "Apr", value: 22.7 },
+                      { name: "May", value: 26.9 },
+                      { name: "Jun", value: 32.1 },
                     ]}
                     title="Volume (K USD)"
                     yAxisLabel="Volume"
@@ -169,9 +169,9 @@ const AdminDashboard = () => {
                 <CardContent>
                   <BarChartComponent 
                     data={[
-                      { name: "Daily", value: 412 },
-                      { name: "Weekly", value: 1523 },
-                      { name: "Monthly", value: 3247 },
+                      { name: "Daily", value: 385 },
+                      { name: "Weekly", value: 1420 },
+                      { name: "Monthly", value: 8547 },
                     ]}
                     title="Active Users"
                     yAxisLabel="Users"
@@ -192,10 +192,10 @@ const AdminDashboard = () => {
                 <CardContent>
                   <BarChartComponent 
                     data={[
-                      { name: "Swap", value: 7165 },
-                      { name: "Bridge", value: 4459 },
-                      { name: "Lend", value: 2388 },
-                      { name: "Stake", value: 1911 },
+                      { name: "Swap", value: 7010 },
+                      { name: "Bridge", value: 4673 },
+                      { name: "Lend", value: 3004 },
+                      { name: "Stake", value: 2003 },
                     ]}
                     title="Transactions by Agent"
                     yAxisLabel="Transactions"
@@ -210,10 +210,10 @@ const AdminDashboard = () => {
                 <CardContent>
                   <BarChartComponent 
                     data={[
-                      { name: "Swap", value: 98.5 },
-                      { name: "Bridge", value: 94.2 },
-                      { name: "Lend", value: 99.1 },
-                      { name: "Stake", value: 97.8 },
+                      { name: "Swap", value: 98.2 },
+                      { name: "Bridge", value: 94.8 },
+                      { name: "Lend", value: 99.3 },
+                      { name: "Stake", value: 97.5 },
                     ]}
                     title="Success Rate (%)"
                     yAxisLabel="Success Rate"
