@@ -2,7 +2,6 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ChainBadge } from "@/components/dashboard/ChainBadge";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 
 // Mock transaction data based on your schema
@@ -86,6 +85,17 @@ export const TransactionTable = () => {
     return `${userId.slice(0, 12)}...`;
   };
 
+  const getChainColor = (chain: string) => {
+    const colors: { [key: string]: string } = {
+      'Ethereum': 'bg-blue-500/20 text-blue-400',
+      'Arbitrum': 'bg-cyan-500/20 text-cyan-400',
+      'Polygon': 'bg-purple-500/20 text-purple-400',
+      'Optimism': 'bg-red-500/20 text-red-400',
+      'Base': 'bg-green-500/20 text-green-400',
+    };
+    return colors[chain] || 'bg-gray-500/20 text-gray-400';
+  };
+
   return (
     <div className="space-y-4">
       <Table>
@@ -120,7 +130,9 @@ export const TransactionTable = () => {
                 <div className="text-sm">{tx.agent_name}</div>
               </TableCell>
               <TableCell>
-                <ChainBadge chain={tx.chain} />
+                <Badge className={getChainColor(tx.chain)}>
+                  {tx.chain}
+                </Badge>
               </TableCell>
               <TableCell>
                 <div>
