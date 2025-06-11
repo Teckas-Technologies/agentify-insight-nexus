@@ -157,7 +157,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({ onSelectNode, on
     e.dataTransfer.dropEffect = "move";
   };
   
-  // Get node icon based on type - fixing the icon rendering
+  // Get node icon based on type - rendering icons as JSX elements
   const getNodeIcon = (type: string) => {
     const categoryType = type.split('-')[0];
     const specificType = type.split('-')[1] || '';
