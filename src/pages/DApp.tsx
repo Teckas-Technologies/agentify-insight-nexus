@@ -105,7 +105,7 @@ export default function DApp() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                DApp Rewards
+                Agentify Airdrop
               </h1>
               {isConnected && (
                 <Badge variant="secondary" className="flex items-center gap-2">
@@ -135,7 +135,7 @@ export default function DApp() {
           // Pre-connection landing
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="space-y-4">
-              <h2 className="text-4xl font-bold">Welcome to DApp Rewards</h2>
+              <h2 className="text-4xl font-bold">Welcome to Agentify Airdrop</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Connect your wallet or sign up with email to start earning points through social engagement, 
                 transactions, and referrals. Unlock exclusive rewards as you grow!
