@@ -12,6 +12,7 @@ import ActivityPage from "./pages/Activity";
 import CommandsPage from "./pages/Commands";
 import TransactionsPage from "./pages/Transactions";
 import AdminDashboard from "./pages/AdminDashboard";
+import DApp from "./pages/DApp";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/commands" element={<CommandsPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/dapp" element={<DApp />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
