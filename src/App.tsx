@@ -13,30 +13,31 @@ import CommandsPage from "./pages/Commands";
 import TransactionsPage from "./pages/Transactions";
 import AdminDashboard from "./pages/AdminDashboard";
 import DApp from "./pages/DApp";
+import { CustomWagmiProvider } from "./contexts/CustomWagmiProvider";
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/playground" element={<Playground />} />
-          <Route path="/agents" element={<AgentsPage />} />
-          <Route path="/activity" element={<ActivityPage />} />
-          <Route path="/commands" element={<CommandsPage />} />
-          <Route path="/transactions" element={<TransactionsPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/dapp" element={<DApp />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <CustomWagmiProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<DApp />} /> {/** <Index /> */}
+            {/* <Route path="/playground" element={<Playground />} />
+            <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/activity" element={<ActivityPage />} />
+            <Route path="/commands" element={<CommandsPage />} />
+            <Route path="/transactions" element={<TransactionsPage />} />
+            <Route path="/admin" element={<AdminDashboard />} /> */}
+            {/* <Route path="/dapp" element={<DApp />} /> */}
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+  </CustomWagmiProvider>
 );
 
 export default App;
