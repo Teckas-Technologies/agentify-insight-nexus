@@ -29,6 +29,7 @@ import { telegramVerificationService } from "@/services/telegramVerification";
 import { useTransactions } from "@/hooks/useTransactions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
+import { Link } from "react-router-dom";
 
 /**
  * POINTS CONFIGURATION
@@ -107,7 +108,7 @@ const socialTasks = [
     name: "Refer a friend",
     points: REFERRAL_POINT,
     icon: "💬",
-    link: "https://airdrop.agentifyai.xyz",
+    link: "https://app.agentifyai.xyz",
     completed: false
   },
   // {
@@ -217,6 +218,8 @@ export default function DApp() {
       };
       initializeUserData();
       checkTelegramStatus();
+    } else {
+      setIsConnected(false);
     }
   }, [user])
 
@@ -320,7 +323,7 @@ export default function DApp() {
 
     // Special handling for referral task
     if (taskId === 'refer') {
-      const referralLink = `https://airdrop.agentifyai.xyz?ref=${userData?.referralCode || user?.id?.replace("did:privy:", "")}`;
+      const referralLink = `https://app.agentifyai.xyz?ref=${userData?.referralCode || user?.id?.replace("did:privy:", "")}`;
       navigator.clipboard.writeText(referralLink);
       toast({
         title: "Referral Link Copied!",
@@ -467,7 +470,7 @@ export default function DApp() {
   };
 
   const copyReferralLink = () => {
-    navigator.clipboard.writeText(`https://airdrop.agentifyai.xyz?ref=${userData?.referralCode}`);
+    navigator.clipboard.writeText(`https://app.agentifyai.xyz?ref=${userData?.referralCode}`);
     toast({
       title: "Referral Link Copied!",
       description: "Share with friends to earn more points",
@@ -484,9 +487,20 @@ export default function DApp() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Agentify Airdrop
-              </h1>
+              <Link to="/" className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-primary/10 ring-1 ring-primary/20">
+                  <div className="logo flex w-[1.7rem] h-[1.7rem] ">
+                    <img
+                      src="images/new-logo.png"
+                      alt="Agentify Logo"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+                <h1 className="text-2xl font-bold bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent">
+                  Agentify
+                </h1>
+              </Link>
               {isConnected && (
                 <Badge variant="secondary" className="flex items-center gap-2">
                   <Trophy className="h-4 w-4" />
@@ -498,18 +512,18 @@ export default function DApp() {
                 </Badge>
               )}
             </div>
-            {!isConnected && (
-              <div className="flex gap-2">
-                <Button onClick={handleConnect} className="flex items-center gap-2">
-                  <Wallet className="h-4 w-4" />
-                  Connect Wallet
-                </Button>
-                {/* <Button variant="outline" onClick={handleConnect} className="flex items-center gap-2">
+            {/* {!isConnected && ( */}
+            <div className="flex gap-2">
+              <Button onClick={handleConnect} className="flex items-center gap-2">
+                <Wallet className="h-4 w-4" />
+                {!isConnected ? "Connect Wallet" : "Disconnect Wallet"}
+              </Button>
+              {/* <Button variant="outline" onClick={handleConnect} className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
                   Sign Up with Email
                 </Button> */}
-              </div>
-            )}
+            </div>
+            {/* )} */}
           </div>
         </div>
       </div>
@@ -536,7 +550,7 @@ export default function DApp() {
               <CardContent className="space-y-4">
                 <Button onClick={handleConnect} size="lg" className="w-full flex items-center gap-2">
                   <Wallet className="h-4 w-4" />
-                  Connect Wallet
+                  {!isConnected ? "Connect Wallet" : "Disconnect Wallet"}
                 </Button>
                 {/* <Button onClick={handleConnect} variant="outline" size="lg" className="w-full flex items-center gap-2">
                   <Mail className="h-4 w-4" />
@@ -692,10 +706,14 @@ export default function DApp() {
                     ))}
                   </div>
                   <Separator className="my-3" />
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">
+                  <div className={`flex ${transactions.length > 0 ? "justify-between" : "justify-center"} items-center`}>
+                    {transactions.length > 0 && <p className="text-sm text-muted-foreground">
                       Total Transaction Points: <span className="font-bold">{userData?.transactionsPoints || transactions.length * TRANSACTION_POINTS || 0}</span>
-                    </p>
+                    </p>}
+                    <Button onClick={() => window.open('https://app.agentifyai.xyz', '_blank')} size="lg" className="w-full flex items-center gap-2 md:max-w-[12rem] max-w-[11rem]">
+                      <Wallet className="h-4 w-4" />
+                      Make a Transaction
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -775,7 +793,7 @@ export default function DApp() {
                 </p>
                 <div className="flex gap-2">
                   <div className="flex-1 p-2 bg-muted rounded border text-sm font-mono">
-                    https://airdrop.agentifyai.xyz?ref={userData?.referralCode || user?.id?.replace("did:privy:", "")}
+                    https://app.agentifyai.xyz?ref={userData?.referralCode || user?.id?.replace("did:privy:", "")}
                   </div>
                   <Button onClick={copyReferralLink} size="sm">
                     <Copy className="h-4 w-4" />
