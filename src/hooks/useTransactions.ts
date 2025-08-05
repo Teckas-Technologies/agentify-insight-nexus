@@ -33,13 +33,13 @@ export function useTransactions() {
         }
     }, [getAccessToken]);
 
-    const getTransactions = useCallback(async (userId: string, privyId: string) => {
+    const getTransactions = useCallback(async (userId: string, privyId: string, skip: number = 0, limit: number = 10) => {
         try {
             const params = new URLSearchParams({
                 user_id: userId,
                 privy_id: privyId,
-                skip: "0",
-                limit: "10",
+                skip: skip.toString(),
+                limit: limit.toString(),
             });
 
             const accessToken = await getAccessToken();

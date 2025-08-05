@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -147,6 +147,10 @@ export default function DApp() {
   const [transactionVolume, setTransactionVolume] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [isLoadingPoints, setIsLoadingPoints] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isLoadingMoreTx, setIsLoadingMoreTx] = useState(false);
+  const [hasMoreTx, setHasMoreTx] = useState(true);
+  const txObserverTarget = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { connectWallet, authenticated } = usePrivy();
   const { wallets } = useWallets();
@@ -163,10 +167,43 @@ export default function DApp() {
     return res;
   }
 
-  const getTransactionData = async () => {
-    const res = await getTransactions(address, user?.id);
+  const getTransactionData = async (isLoadMore = false) => {
+    if (isLoadMore && (!hasMoreTx || isLoadingMoreTx)) return;
+    
+    if (isLoadMore) {
+      setIsLoadingMoreTx(true);
+    }
+    
+    const skip = isLoadMore ? currentPage * 10 : 0;
+    const res = await getTransactions(address, user?.id, skip, 10);
     console.log("User Transactions:", res);
-    setTransactions(res?.data?.data || []);
+    
+    const responseData = res?.data?.data || [];
+    const newTransactions = responseData.data || responseData || [];
+    const totalPages = responseData.totalPages || res?.data?.totalPages || 1;
+    const currentPageFromAPI = responseData.currentPage || res?.data?.currentPage || 1;
+    
+    if (isLoadMore) {
+      // Always add new transactions, even if there's only 1
+      if (newTransactions.length > 0) {
+        setTransactions(prev => [...prev, ...newTransactions]);
+        setCurrentPage(prev => prev + 1);
+      }
+      
+      // Check if we've reached the last page based on API response
+      if (currentPage + 1 >= totalPages || newTransactions.length === 0) {
+        setHasMoreTx(false);
+      }
+      
+      setIsLoadingMoreTx(false);
+    } else {
+      // Initial load
+      setTransactions(newTransactions);
+      setCurrentPage(1);
+      // Set hasMoreTx based on total pages from API
+      setHasMoreTx(totalPages > 1);
+    }
+    
     return res;
   };
 
@@ -239,6 +276,30 @@ export default function DApp() {
       return () => clearTimeout(timer);
     }
   }, [transactions.length, transactionVolume])
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const loadMoreTransactions = () => {
+      if (!isLoadingMoreTx && hasMoreTx && user?.id) {
+        getTransactionData(true);
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreTransactions();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (txObserverTarget.current) {
+      observer.observe(txObserverTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [isLoadingMoreTx, hasMoreTx, user, currentPage]);
 
   const onboardUser = async () => {
     console.log("Onboarding user with ID:", user.id);
@@ -704,6 +765,21 @@ export default function DApp() {
                         <Badge variant="secondary">+{TRANSACTION_POINTS} pts</Badge>
                       </div>
                     ))}
+                    
+                    {/* Infinite scroll trigger */}
+                    <div ref={txObserverTarget} className="h-8">
+                      {isLoadingMoreTx && (
+                        <div className="flex justify-center items-center">
+                          <Loader2 className="h-4 w-4 animate-spin text-primary mr-2" />
+                          <span className="text-xs text-muted-foreground">Loading more...</span>
+                        </div>
+                      )}
+                      {!hasMoreTx && transactions.length > 0 && (
+                        <div className="text-center text-xs text-muted-foreground">
+                          No more transactions
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <Separator className="my-3" />
                   <div className={`flex ${transactions.length > 0 ? "justify-between" : "justify-center"} items-center`}>
