@@ -108,7 +108,7 @@ const socialTasks = [
     name: "Refer a friend",
     points: REFERRAL_POINT,
     icon: "💬",
-    link: "https://app.agentifyai.xyz",
+    link: "https://airdrop.agentifyai.xyz/",
     completed: false
   },
   // {
@@ -384,7 +384,7 @@ export default function DApp() {
 
     // Special handling for referral task
     if (taskId === 'refer') {
-      const referralLink = `https://app.agentifyai.xyz?ref=${userData?.referralCode || user?.id?.replace("did:privy:", "")}`;
+      const referralLink = `https://airdrop.agentifyai.xyz?ref=${userData?.referralCode || user?.id?.replace("did:privy:", "")}`;
       navigator.clipboard.writeText(referralLink);
       toast({
         title: "Referral Link Copied!",
@@ -531,7 +531,7 @@ export default function DApp() {
   };
 
   const copyReferralLink = () => {
-    navigator.clipboard.writeText(`https://app.agentifyai.xyz?ref=${userData?.referralCode}`);
+    navigator.clipboard.writeText(`https://airdrop.agentifyai.xyz?ref=${userData?.referralCode}`);
     toast({
       title: "Referral Link Copied!",
       description: "Share with friends to earn more points",
@@ -786,7 +786,7 @@ export default function DApp() {
                     {transactions.length > 0 && <p className="text-sm text-muted-foreground">
                       Total Transaction Points: <span className="font-bold">{userData?.transactionsPoints || transactions.length * TRANSACTION_POINTS || 0}</span>
                     </p>}
-                    <Button onClick={() => window.open('https://app.agentifyai.xyz', '_blank')} size="lg" className="w-full flex items-center gap-2 md:max-w-[12rem] max-w-[11rem]">
+                    <Button onClick={() => window.open('https://airdrop.agentifyai.xyz', '_blank')} size="lg" className="w-full flex items-center gap-2 md:max-w-[12rem] max-w-[11rem]">
                       <Wallet className="h-4 w-4" />
                       Make a Transaction
                     </Button>
@@ -869,7 +869,7 @@ export default function DApp() {
                 </p>
                 <div className="flex gap-2">
                   <div className="flex-1 p-2 bg-muted rounded border text-sm font-mono">
-                    https://app.agentifyai.xyz?ref={userData?.referralCode || user?.id?.replace("did:privy:", "")}
+                    https://airdrop.agentifyai.xyz?ref={userData?.referralCode || user?.id?.replace("did:privy:", "")}
                   </div>
                   <Button onClick={copyReferralLink} size="sm">
                     <Copy className="h-4 w-4" />
