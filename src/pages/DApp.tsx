@@ -39,16 +39,16 @@ import { Link } from "react-router-dom";
 export const POINTS_CONFIG = {
   // Transaction & Referral Points
   TRANSACTION: 20,      // Points per transaction
-  REFERRAL: 5,          // Points per successful referral
+  REFERRAL: 50,          // Points per successful referral
 
   // Volume Milestone Points (one-time bonuses)
-  VOLUME_10K: 40,       // Bonus for reaching $10K volume
-  VOLUME_50K: 150,      // Bonus for reaching $50K volume
-  VOLUME_100K: 300,     // Bonus for reaching $100K volume
+  VOLUME_10K: 400,       // Bonus for reaching $10K volume
+  VOLUME_50K: 2000,      // Bonus for reaching $50K volume
+  VOLUME_100K: 5000,     // Bonus for reaching $100K volume
 
   // Social Task Points (one-time rewards)
-  TELEGRAM: 10,        // Join Telegram channel
-  TWITTER: 10,          // Follow on Twitter/X
+  TELEGRAM: 50,        // Join Telegram channel
+  TWITTER: 50,          // Follow on Twitter/X
   DISCORD: 10,         // Join Discord server
   GITHUB: 5,           // Star GitHub repository
 };
