@@ -92,7 +92,7 @@ const socialTasks = [
     name: "Join Telegram",
     points: TELEGRAM_POINTS,
     icon: "📱",
-    link: "https://t.me/agentifyHQ",
+    link: "https://t.me/agentifyportal",
     completed: false
   },
   {
