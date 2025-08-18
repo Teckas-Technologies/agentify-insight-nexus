@@ -3,21 +3,28 @@ interface TelegramVerificationResponse {
   error?: string;
 }
 
+interface TelegramStatusResponse {
+  connected: boolean;
+  verified: boolean;
+  telegramId?: string;
+  telegramUsername?: string;
+}
+
 export class TelegramVerificationService {
   private apiBaseUrl: string;
 
   constructor() {
-    this.apiBaseUrl = import.meta.env.VITE_API_URL;;
+    this.apiBaseUrl = import.meta.env.VITE_API_URL;
   }
 
   /**
    * Verify if a user has joined the Telegram channel
-   * @param userId - The user's Telegram user ID or username
+   * @param telegramId - The user's Telegram ID
    * @param privyId - The user's Privy ID for backend association
    * @returns Promise with verification result
    */
   async verifyChannelMembership(
-    userId: string,
+    telegramId: string,
     privyId: string
   ): Promise<TelegramVerificationResponse> {
     try {
@@ -27,7 +34,7 @@ export class TelegramVerificationService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          telegramUserId: userId,
+          telegramUserId: telegramId,
           privyId: privyId,
         }),
       });
@@ -72,7 +79,7 @@ export class TelegramVerificationService {
    * @param privyId - The user's Privy ID
    * @returns Promise with status result
    */
-  async checkUserStatus(privyId: string): Promise<{connected: boolean, verified: boolean, telegramUsername?: string}> {
+  async checkUserStatus(privyId: string): Promise<TelegramStatusResponse> {
     try {
       const response = await fetch(`${this.apiBaseUrl}/api/telegram/status/${privyId}`);
       

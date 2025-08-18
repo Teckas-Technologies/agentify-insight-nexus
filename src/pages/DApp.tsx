@@ -30,6 +30,8 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
+import { TelegramAuth } from "@/components/TelegramAuth";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 /**
  * POINTS CONFIGURATION
@@ -144,6 +146,8 @@ export default function DApp() {
   const [userData, setUserData] = useState<UserData>(null);
   const [verifyingTasks, setVerifyingTasks] = useState<{ [key: string]: boolean }>({});
   const [telegramConnected, setTelegramConnected] = useState(false);
+  const [telegramId, setTelegramId] = useState<string | null>(null);
+  const [telegramShowInput, setTelegramShowInput] = useState(false);
   const [transactionVolume, setTransactionVolume] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [isLoadingPoints, setIsLoadingPoints] = useState(false);
@@ -354,6 +358,9 @@ export default function DApp() {
         if (response.ok) {
           const data = await response.json();
           setTelegramConnected(data.connected);
+          if (data.telegramId) {
+            setTelegramId(data.telegramId);
+          }
           if (data.verified && !completedTasks.includes('telegram')) {
             setCompletedTasks(prev => [...prev, 'telegram']);
           }
@@ -541,6 +548,8 @@ export default function DApp() {
   const totalTransactionPoints = transactionLogsData.length * TRANSACTION_POINTS;
   const totalPoints = userPoints + totalTransactionPoints;
 
+  const isMobile = useIsMobile();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Header */}
@@ -562,7 +571,7 @@ export default function DApp() {
                   Agentify
                 </h1>
               </Link>
-              {isConnected && (
+              {isConnected && !isMobile && (
                 <Badge variant="secondary" className="flex items-center gap-2">
                   <Trophy className="h-4 w-4" />
                   {isLoadingPoints ? (
@@ -577,7 +586,7 @@ export default function DApp() {
             <div className="flex gap-2">
               <Button onClick={handleConnect} className="flex items-center gap-2">
                 <Wallet className="h-4 w-4" />
-                {!isConnected ? "Connect Wallet" : "Disconnect Wallet"}
+                {!isConnected ? "Connect Wallet" : isMobile ? "Disconnect" : "Disconnect Wallet"}
               </Button>
               {/* <Button variant="outline" onClick={handleConnect} className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
@@ -699,7 +708,7 @@ export default function DApp() {
                   {socialTasks.map((task) => (
                     <div
                       key={task.id}
-                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                      className={`flex ${task.id === 'telegram' && telegramShowInput && isMobile ? "flex-col items-start gap-3" : "items-center justify-between"} p-3 border rounded-lg hover:bg-muted/50 transition-colors`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">{task.icon}</span>
@@ -708,39 +717,48 @@ export default function DApp() {
                           <p className="text-sm text-muted-foreground">+{task.points} points</p>
                         </div>
                       </div>
-                      <Button
-                        size="sm"
-                        variant={completedTasks.includes(task.id) ? "secondary" : "default"}
-                        onClick={() => handleSocialTask(task.id, task.points, task.link)}
-                        disabled={completedTasks.includes(task.id) || verifyingTasks[task.id]}
-                      >
-                        {verifyingTasks[task.id] ? (
-                          <>
-                            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                            Verifying...
-                          </>
-                        ) : completedTasks.includes(task.id) ? (
-                          <>
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Completed
-                          </>
-                        ) : task.id === 'telegram' ? (
-                          <>
-                            Join {/** Verify & */}
-                            <ExternalLink className="h-3 w-3 ml-1" />
-                          </>
-                        ) : task.id === "refer" ? (
-                          <>
-                            Copy {/** Verify & */}
-                            <CopyIcon className="h-3 w-3 ml-1" />
-                          </>
-                        ) : (
-                          <>
-                            Join
-                            <ExternalLink className="h-3 w-3 ml-1" />
-                          </>
-                        )}
-                      </Button>
+                      {task.id === 'telegram' ? (
+                        <TelegramAuth
+                          privyId={user?.id || ''}
+                          onSuccess={(newTelegramId) => {
+                            setTelegramId(newTelegramId);
+                            setTelegramConnected(true);
+                          }}
+                          points={task.points}
+                          isCompleted={completedTasks.includes(task.id)}
+                          onLayoutChange={setTelegramShowInput}
+                        />
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant={completedTasks.includes(task.id) ? "secondary" : "default"}
+                          onClick={() => handleSocialTask(task.id, task.points, task.link)}
+                          disabled={completedTasks.includes(task.id) || verifyingTasks[task.id]}
+                          className="min-w-[130px]"
+                        >
+                          {verifyingTasks[task.id] ? (
+                            <>
+                              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                              Verifying...
+                            </>
+                          ) : completedTasks.includes(task.id) ? (
+                            <>
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Completed
+                            </>
+                          ) : task.id === "refer" ? (
+                            <>
+                              Copy {/** Verify & */}
+                              <CopyIcon className="h-3 w-3 ml-1" />
+                            </>
+                          ) : (
+                            <>
+                              Follow
+                              <ExternalLink className="h-3 w-3 ml-1" />
+                            </>
+                          )}
+                        </Button>
+                      )}
                     </div>
                   ))}
                 </CardContent>
@@ -786,7 +804,7 @@ export default function DApp() {
                     {transactions.length > 0 && <p className="text-sm text-muted-foreground">
                       Total Transaction Points: <span className="font-bold">{userData?.transactionsPoints || transactions.length * TRANSACTION_POINTS || 0}</span>
                     </p>}
-                    <Button onClick={() => window.open('https://airdrop.agentifyai.xyz', '_blank')} size="lg" className="w-full flex items-center gap-2 md:max-w-[12rem] max-w-[11rem]">
+                    <Button onClick={() => window.open('https://app.agentifyai.xyz', '_blank')} size="lg" className="w-full flex items-center gap-2 md:max-w-[12rem] max-w-[11rem]">
                       <Wallet className="h-4 w-4" />
                       Make a Transaction
                     </Button>
